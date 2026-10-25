@@ -542,6 +542,256 @@ write_fp('ElectroCookie_Breadboard_Full', footprint(
     'Outline and holes from the ElectroCookie dimension drawing; rail length and jumper positions from photos.',
     'electrocookie breadboard protoboard', 'through_hole', items, -25.5, 25.5, jumpers=True))
 
+# --- Adafruit PCM5102 / PCM5100 I2S DAC breakout (products 6250 / 6251) -----
+# Geometry from Adafruit's EagleCAD board (github.com/adafruit/Adafruit-PCM510x-I2S-DAC-PCB, CC-BY-SA):
+# board 30.48 x 20.32 mm, R2.54 corners; 8-pin header 2.54 mm above the bottom edge, 6-pin header 2.54 mm below the
+# top edge; four plated 2.5 mm holes 2.54 mm in from each corner; PJ-332A 3.5 mm jack on the right edge.
+# Pin numbers: 1-8 = bottom header left to right (VIN GND WSEL DIN BCK Lout G Rout), 9-14 = top header
+# left to right (DE FIL MCK MU FM 3V).
+dac_left = [('1', 'VIN', 'power_in'), ('14', '3V', 'power_out'), ('2', 'GND', 'power_in'), None,
+            ('5', 'BCK', 'input'), ('3', 'WSEL', 'input'), ('4', 'DIN', 'input'), ('11', 'MCK', 'input')]
+dac_right = [('6', 'Lout', 'output'), ('8', 'Rout', 'output'), ('7', 'AGND', 'passive'), None,
+             ('9', 'DE', 'input'), ('10', 'FIL', 'input'), ('12', 'MU', 'input'), ('13', 'FM', 'input')]
+symbols.append(box_symbol(
+    'Adafruit_PCM510x_I2S_DAC', 'U', dac_left, dac_right,
+    f'{LIBNAME}:Adafruit_PCM510x_I2S_DAC', 'https://learn.adafruit.com/adafruit-pcm510x-i2s-dac',
+    'Adafruit PCM5102 (6250, 112 dB) / PCM5100 (6251, 100 dB) I2S stereo DAC breakout: VIN 3.3-5 V with onboard '
+    '3.3 V regulator (3V out), 3.3 V logic, I2S BCK/WSEL/DIN (MCK optional, PLL from BCK), line-level Lout/Rout '
+    'and 3.5 mm jack (1 k load min, not AC-coupled), control pins DE/FIL/MU/FM with onboard pull resistors. '
+    '30.5 x 20.3 mm, two headers.', 'pcm5102 pcm5100 i2s dac audio adafruit', 'Adafruit_PCM510x*'))
+items = []
+for i, n in enumerate(range(1, 9)):
+    items.append(pad_tht(n, -8.89 + 2.54 * i, 7.62, 1.7, 1.0, 'rect' if n == 1 else 'circle'))
+for i, n in enumerate(range(9, 15)):
+    items.append(pad_tht(n, -6.35 + 2.54 * i, -7.62, 1.7, 1.0, 'circle'))
+for x in (-12.7, 12.7):
+    for y in (-7.62, 7.62):
+        items.append(pad_tht('', x, y, 4.4, 2.5, 'circle'))                      # plated mounting holes
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-15.24, -10.16, 15.24, 10.16, layer, w))
+    items.append(fp_rect(4.0, -3.0, 15.24, 3.0, layer, w))                        # PJ-332A jack body
+    items.append(fp_rect(15.24, -2.4, 16.8, 2.4, layer, w))                       # jack barrel past the board edge
+items.append(fp_rect(-15.5, -10.4, 17.1, 10.4, 'F.CrtYd', 0.05))
+items.append(fp_text('1=VIN GND WSEL DIN BCK Lout G Rout=8', 0, 5.3, 'F.Fab', 0.7, 0.1))
+items.append(fp_text('9=DE FIL MCK MU FM 3V=14', -2.0, -5.3, 'F.Fab', 0.7, 0.1))
+items.append(fp_text('${REFERENCE}', -4, 0, 'F.Fab'))
+items.append(model(MODEL + 'Adafruit_PCM510x_I2S_DAC.wrl'))                      # built by tools/build_models.py
+write_fp('Adafruit_PCM510x_I2S_DAC', footprint(
+    'Adafruit_PCM510x_I2S_DAC',
+    'Adafruit PCM5102/PCM5100 I2S DAC breakout (6250/6251): 30.48 x 20.32 mm, 1x8 header (pin 1 = VIN, square) '
+    '2.54 mm from the bottom edge and 1x6 header 2.54 mm from the top edge, both 2.54 mm pitch, 1.0 mm drills; '
+    'four plated 2.5 mm mounting holes at (+/-12.7, +/-7.62); 3.5 mm jack on the right edge, barrel 1.6 mm proud. '
+    'From the Adafruit EagleCAD board file (CC-BY-SA).',
+    'adafruit pcm5102 pcm5100 i2s dac', 'through_hole', items, -11.5, 11.5))
+
+# --- Adafruit TXB0104 bi-directional level shifter breakout (product 1875) -----
+# From Adafruit's EagleCAD board (CC-BY-SA): 12.7 x 17.78 mm, R2.54 corners, two 1x6 headers 10.16 mm apart,
+# 2.54 mm from each side edge, pins 2.54 mm from the top and bottom edges. No mounting hole.
+# Pin numbers: 1-6 left header top to bottom (LV A1 A2 A3 A4 OE), 7-12 right header top to bottom (HV B1 B2 B3 B4 GND).
+txb_left = [('1', 'LV', 'power_in'), ('2', 'A1', 'bidirectional'), ('3', 'A2', 'bidirectional'),
+            ('4', 'A3', 'bidirectional'), ('5', 'A4', 'bidirectional'), ('6', 'OE', 'input')]
+txb_right = [('7', 'HV', 'power_in'), ('8', 'B1', 'bidirectional'), ('9', 'B2', 'bidirectional'),
+             ('10', 'B3', 'bidirectional'), ('11', 'B4', 'bidirectional'), ('12', 'GND', 'power_in')]
+symbols.append(box_symbol(
+    'Adafruit_TXB0104_Level_Shifter', 'U', txb_left, txb_right,
+    f'{LIBNAME}:Adafruit_TXB0104_Breakout', 'https://www.ti.com/lit/ds/symlink/txb0104.pdf',
+    'Adafruit TXB0104 4-channel bi-directional auto-direction level shifter breakout (1875): LV side 1.2-3.6 V, '
+    'HV side 1.7-5.5 V, OE pulled up on board (tie low to tri-state). Not for I2C or strong pull-ups (>= 50 k only). '
+    '12.7 x 17.8 mm, two 1x6 headers.', 'txb0104 level shifter adafruit', 'Adafruit_TXB0104*'))
+items = []
+for i in range(6):
+    items.append(pad_tht(i + 1, -5.08, -6.35 + 2.54 * i, 1.75, 1.0, 'rect' if i == 0 else 'circle'))
+    items.append(pad_tht(i + 7, 5.08, -6.35 + 2.54 * i, 1.75, 1.0, 'circle'))
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-6.35, -8.89, 6.35, 8.89, layer, w))
+items.append(fp_rect(-6.6, -9.15, 6.6, 9.15, 'F.CrtYd', 0.05))
+items.append(fp_text('1=LV A1-A4 OE=6', 0, -7.6, 'F.Fab', 0.6, 0.1))
+items.append(fp_text('7=HV B1-B4 GND=12', 0, 7.6, 'F.Fab', 0.6, 0.1))
+items.append(fp_text('${REFERENCE}', 0, 0, 'F.Fab', 0.8, 0.12))
+items.append(model(MODEL + 'Adafruit_TXB0104_Breakout.wrl'))                      # built by tools/build_models.py
+write_fp('Adafruit_TXB0104_Breakout', footprint(
+    'Adafruit_TXB0104_Breakout',
+    'Adafruit TXB0104 level shifter breakout (1875): 12.7 x 17.78 mm, two 1x6 2.54 mm headers 10.16 mm apart, '
+    '1.0 mm drills, pin 1 = LV (square) at top-left, OE bottom-left; HV top-right, GND bottom-right. '
+    'From the Adafruit EagleCAD board file (CC-BY-SA).',
+    'adafruit txb0104 level shifter', 'through_hole', items, -10.5, 10.5))
+
+# --- Adafruit 4-channel BSS138 I2C-safe level shifter (product 757) ----------
+# From Adafruit's EagleCAD board (CC-BY-SA): 15.24 x 20.45 mm, R2.54 corners, two 1x6 headers 10.16 mm apart,
+# 2.54 mm from each side edge; pin row centre 10.16 mm above the bottom edge (board 20.447 tall, so 10.29 below the top).
+# Pin numbers: 1-6 left top to bottom (LV A1 A2 A3 A4 GND), 7-12 right top to bottom (HV B1 B2 B3 B4 GND).
+bss_left = [('1', 'LV', 'power_in'), ('2', 'A1', 'bidirectional'), ('3', 'A2', 'bidirectional'),
+            ('4', 'A3', 'bidirectional'), ('5', 'A4', 'bidirectional'), ('6', 'GND', 'power_in')]
+bss_right = [('7', 'HV', 'power_in'), ('8', 'B1', 'bidirectional'), ('9', 'B2', 'bidirectional'),
+             ('10', 'B3', 'bidirectional'), ('11', 'B4', 'bidirectional'), ('12', 'GND', 'power_in')]
+symbols.append(box_symbol(
+    'Adafruit_BSS138_4ch_Level_Shifter', 'U', bss_left, bss_right,
+    f'{LIBNAME}:Adafruit_BSS138_Level_Shifter', 'https://www.adafruit.com/product/757',
+    'Adafruit 4-channel bi-directional logic level converter (757): four BSS138 FETs with 10 k pull-ups to LV and HV '
+    '(NXP AN10441 style), I2C-safe, LV down to 1.8 V, HV up to 10 V; slow (< 2 MHz SPI). Both GND pins are joined. '
+    '15.2 x 20.4 mm, two 1x6 headers.', 'bss138 level shifter i2c adafruit', 'Adafruit_BSS138*'))
+items = []
+for i in range(6):
+    items.append(pad_tht(i + 1, -5.08, -6.35 + 2.54 * i, 1.75, 1.0, 'rect' if i == 0 else 'circle'))
+    items.append(pad_tht(i + 7, 5.08, -6.35 + 2.54 * i, 1.75, 1.0, 'circle'))
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-7.62, -10.287, 7.62, 10.16, layer, w))
+items.append(fp_rect(-7.9, -10.55, 7.9, 10.4, 'F.CrtYd', 0.05))
+items.append(fp_text('1=LV A1-A4 GND=6', 0, -8.5, 'F.Fab', 0.6, 0.1))
+items.append(fp_text('7=HV B1-B4 GND=12', 0, 8.5, 'F.Fab', 0.6, 0.1))
+items.append(fp_text('${REFERENCE}', 0, 0, 'F.Fab', 0.8, 0.12))
+items.append(model(MODEL + 'Adafruit_BSS138_Level_Shifter.wrl'))                  # built by tools/build_models.py
+write_fp('Adafruit_BSS138_Level_Shifter', footprint(
+    'Adafruit_BSS138_Level_Shifter',
+    'Adafruit 4-channel BSS138 level shifter (757): 15.24 x 20.45 mm, two 1x6 2.54 mm headers 10.16 mm apart, '
+    '1.0 mm drills, pin 1 = LV (square) top-left, GND bottom-left; HV top-right, GND bottom-right. '
+    'From the Adafruit EagleCAD board file (CC-BY-SA).',
+    'adafruit bss138 level shifter', 'through_hole', items, -11.8, 11.5))
+
+# --- Kycon STX-3120-3B 3.5 mm stereo jack (Adafruit 1699 "breadboard-friendly") -----
+# Kycon STX-3120 drawing: body 12.0 wide x 10.0 tall, 14.1 deep including a 3.5 mm bezel (dia 6.8, hole 3.6 at 6.5
+# above the PCB); pins 1.0 x 0.5 mm: pin 1 (sleeve) centred, 3.0 mm behind the bezel; pins 2 (tip) and 5 (ring)
+# 5.0 mm further back at +/-5.0 mm. The 3B variant omits the switch pins 3/4 of the 5B.
+jack_left = [('1', 'S', 'passive'), ('2', 'T', 'passive'), ('5', 'R', 'passive')]
+symbols.append(box_symbol(
+    'AudioJack_3.5mm_STX-3120-3B', 'J', jack_left, [],
+    f'{LIBNAME}:Jack_3.5mm_Kycon_STX-3120-3B_Horizontal', 'https://cdn-shop.adafruit.com/product-files/1699/STX3120.pdf',
+    'Kycon STX-3120-3B 3.5 mm stereo jack, all-plastic PCB mount, right-angle (Adafruit 1699): pin 1 sleeve, '
+    'pin 2 tip (left), pin 5 ring (right); spring contacts, no switches. 12 x 14.1 x 10 mm.',
+    'audio jack 3.5mm stereo kycon stx-3120', 'Jack*3.5mm*STX*'))
+items = [pad_tht(1, 0, 0, 1.8, 1.1, 'rect'), pad_tht(2, -5.0, 5.0, 1.8, 1.1), pad_tht(5, 5.0, 5.0, 1.8, 1.1)]
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-6.0, -3.0, 6.0, 7.6, layer, w))                         # body (y = 0 at pin 1)
+    items.append(fp_rect(-3.4, -6.5, 3.4, -3.0, layer, w))                        # bezel, normally past the board edge
+items.append(fp_rect(-6.3, -6.8, 6.3, 7.9, 'F.CrtYd', 0.05))
+items.append(fp_text('opening', 0, -8.0, 'F.Fab', 0.6, 0.1))
+items.append(fp_text('1=S 2=T 5=R', 0, 2.5, 'F.Fab', 0.6, 0.1))
+items.append(fp_text('${REFERENCE}', 0, 6.3, 'F.Fab', 0.7, 0.1))
+items.append(model(MODEL + 'STX-3120-3B.wrl'))                                      # built by tools/build_models.py
+write_fp('Jack_3.5mm_Kycon_STX-3120-3B_Horizontal', footprint(
+    'Jack_3.5mm_Kycon_STX-3120-3B_Horizontal',
+    'Kycon STX-3120-3B 3.5 mm stereo jack (Adafruit 1699): pin 1 (sleeve, square) at the origin, pins 2 (tip) and '
+    '5 (ring) 5.0 mm behind it at +/-5.0 mm; body 12 x 10.6 mm starting 3.0 mm in front of pin 1, 6.8 mm bezel a '
+    'further 3.5 mm forward (usually past the board edge). Drills 1.1 mm for the 1.0 x 0.5 mm pins. From the Kycon drawing.',
+    'audio jack 3.5mm kycon stx-3120 adafruit 1699', 'through_hole', items, 9.5, -9.5))
+
+# --- ProtoSupplies PSB-1 MCU proto board with DC input ---------------------
+# 102 x 102 mm, four 3.5 mm holes on a 91.44 mm square. 38 x 38 grid of 2.54 mm positions centred on the board
+# (hole centres sit half a pitch outside the outer columns/rows; checked against the vendor CAD renders, where the
+# holes land at grid (0.5, 0.5) and (36.5, 0.5)). Column C and row R below count from 0 at the top-left.
+# Layout read from the vendor's front/back CAD renders (protosupplies.com, PSB-1-CAD-Front/Back.jpg):
+#  rows 0-1  C3-22   2x20 header (pin 1 bottom-left, odd pins in row 1, even in row 0); rows 2-3 breakout pads
+#            C25-34  staggered 2x10 header (rows 0/2 shifted +1.27 mm); rows 2-3 breakout pads
+#  row 4     G band  (back-side trace joining every G column) with feed pads at C3 8 15 22 29 34
+#  row 5     V band  front-side trace per column group, feed pads at the same columns
+#  rows 6+   pairs of V/G bus columns: V at C0 5 10 18 26 31 36, G at C1 6 11 19 27 32 37;
+#            3-hole strips C2-4, C7-9 (rows 6-24) and C28-30, C33-35 (rows 6-33); 6-hole strips C12-17, C20-25 (rows 6-37)
+#  rows 26-27 C9-10  2x2 VIN/V jumper (top row = V of C10, bottom row = VIN); C10 rows 28-37 = VIN column
+#  bottom-left        DC input section: P1 DC-005 jack, J1 2-pin JST, C1 100 uF (2 mm), C2 100 nF, R1 1 k, 3 mm LED
+# The renders show the seven V rails as separate copper segments (each with its own feed pad); the vendor schematic
+# draws one V net. They are named V1..V7 here; set PSB_V_COMMON = True to merge them after checking with a meter.
+PSB_V_COMMON = False
+P = 2.54
+def psb(c, r):
+    return (c - 18.5) * P, (r - 18.5) * P
+items = []
+def ppad(num, c, r, size=1.78, drill=1.02, shape='circle'):
+    x, y = psb(c, r)
+    items.append(pad_tht(num, x, y, size, drill, shape))
+def pline(c1, r1, c2, r2, layer, w=1.0):
+    x1, y1 = psb(c1, r1); x2, y2 = psb(c2, r2)
+    items.append(fp_line(x1, y1, x2, y2, layer, w))
+def vname(i):
+    return 'V' if PSB_V_COMMON else f'V{i}'
+# headers
+for i in range(20):
+    ppad(f'H{2*i+1}', 3 + i, 1, shape='rect' if i == 0 else 'circle'); ppad(f'H{2*i+2}', 3 + i, 0)
+    ppad(f'H{2*i+1}', 3 + i, 2); ppad(f'H{2*i+2}', 3 + i, 3)                   # breakout pads (row 2 = odd, row 3 = even)
+    pline(3 + i, 1, 3 + i, 2, 'B.Cu', 0.4); pline(3 + i, 0, 3 + i, 3, 'F.Cu', 0.3)
+for i in range(10):
+    ppad(f'K{2*i+1}', 25 + i, 1, shape='rect' if i == 0 else 'circle'); ppad(f'K{2*i+2}', 25.5 + i, 0)
+    ppad(f'K{2*i+1}', 25 + i, 3); ppad(f'K{2*i+2}', 25.5 + i, 2)
+    pline(25 + i, 1, 25 + i, 3, 'B.Cu', 0.4); pline(25.5 + i, 0, 25.5 + i, 2, 'F.Cu', 0.3)
+# bus columns
+V_COLS = {0: (6, 24), 5: (6, 24), 10: (6, 24), 18: (6, 37), 26: (6, 37), 31: (6, 33), 36: (6, 33)}
+G_COLS = {1: (6, 24), 6: (6, 24), 11: (6, 37), 19: (6, 37), 27: (6, 37), 32: (6, 33), 37: (6, 33)}
+FEED = (3, 8, 15, 22, 29, 34)
+for i, (c, (r0, r1)) in enumerate(sorted(V_COLS.items()), start=1):
+    for r in range(r0, r1 + 1):
+        ppad(vname(i), c, r, shape='rect' if r == r0 else 'circle')
+    pline(c, r0, c, r1, 'F.Cu'); pline(c, r0, c, r1, 'B.Cu')
+    seg0 = 0 if i == 1 else c - 3                                                   # V band segment: from the strip group to the V column
+    pline(seg0, 5, c, 5, 'F.Cu', 1.5); pline(c, 5, c, r0, 'F.Cu')
+    if i > 1:
+        ppad(vname(i), FEED[i - 2], 5, shape='rect')
+for c, (r0, r1) in G_COLS.items():
+    for r in range(r0, r1 + 1):
+        ppad('G', c, r, shape='rect' if r == r0 else 'circle')
+    pline(c, r0, c, r1, 'F.Cu'); pline(c, r0, c, r1, 'B.Cu'); pline(c, 4, c, r0, 'B.Cu')
+pline(1, 4, 37, 4, 'B.Cu', 1.5)
+for c in FEED:
+    ppad('G', c, 4, shape='rect')
+# prototype strips
+STRIPS = (('a', 2, 4, 6, 24), ('b', 7, 9, 6, 24), ('c', 12, 17, 6, 37), ('d', 20, 25, 6, 37), ('e', 28, 30, 6, 33), ('f', 33, 35, 6, 33))
+for grp, c0, c1, r0, r1 in STRIPS:
+    for r in range(r0, r1 + 1):
+        for c in range(c0, c1 + 1):
+            ppad(f'{grp}{r + 1}', c, r)
+        pline(c0, r, c1, r, 'F.Cu', 0.6); pline(c0, r, c1, r, 'B.Cu', 0.6)
+# VIN/V jumper, VIN column
+for c in (9, 10):
+    ppad(vname(3), c, 26, shape='rect'); ppad('VIN', c, 27, shape='rect')
+pline(9, 26, 10, 26, 'F.Cu'); pline(9, 27, 10, 27, 'F.Cu'); pline(10, 24, 10, 26, 'F.Cu')
+for r in range(28, 38):
+    ppad('VIN', 10, r, shape='rect' if r == 28 else 'circle')
+pline(10, 27, 10, 37, 'F.Cu'); pline(10, 27, 10, 37, 'B.Cu'); pline(9, 27, 9, 37.5, 'F.Cu', 1.5)
+# DC input section (positions measured on the vendor render, +/-0.15 mm; nets from the vendor schematic)
+ppad('G', 0.75, 29.5, shape='rect'); ppad('VIN', 0.75, 30.5)                      # J1 JST PH 2.54: pin 1 (-) top, pin 2 (+) bottom
+ppad('G', 4.0, 29.74); ppad('VIN', 4.0, 30.54)                                     # C1 100 uF, 2 mm pitch, + at the bottom
+ppad('G', 6.0, 29.5); ppad('VIN', 6.0, 30.5)                                       # C2 100 nF
+ppad('VIN', 7.5, 29.0); ppad('LED', 7.5, 33.0)                                     # R1 1 k, 10.16 mm pitch
+ppad('G', 7.5, 35.0); ppad('LED', 7.5, 36.0)                                       # 3 mm LED: cathode top, anode (+) bottom (orientation from silk, verify)
+for num, c, r, rot in (('VIN', 4.28, 33.14, 0), ('G', 4.27, 35.64, 0), ('G', 6.06, 34.32, 90)):   # P1 DC-005 jack: centre pin, sleeve, switch
+    x, y = psb(c, r)
+    items.append(f'(pad "{num}" thru_hole oval (at {f(x)} {f(y)} {rot}) (size 3.4 1.9) (drill oval 3.0 1.0)'
+                 f' (layers "*.Cu" "*.Mask") (remove_unused_layers no) (uuid "{U()}"))')
+pline(9, 30.5, 7.5, 30.5, 'F.Cu', 1.5); pline(7.5, 30.5, 0.75, 30.5, 'F.Cu', 1.5); pline(4.0, 30.54, 4.28, 33.14, 'F.Cu', 1.5)
+# outline, holes, silkscreen
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-51.0, -51.0, 51.0, 51.0, layer, w))
+items.append(fp_rect(-51.25, -51.25, 51.25, 51.25, 'F.CrtYd', 0.05))
+for x in (-45.72, 45.72):
+    for y in (-45.72, 45.72):
+        items.append(pad_npth(x, y, 3.5))
+        items.append(fp_circle(x, y, 3.0, 'F.Fab', 0.1))
+x, y = psb(2.5, 32.9); items.append(fp_rect(x, y, x + 9.0, 51.0, 'F.Fab', 0.1))                     # P1 body
+x, y = psb(3, 0); items.append(fp_rect(x - 1.27, y - 1.27, x + 19 * P + 1.27, y + P + 1.27, 'F.SilkS'))   # 2x20 outline
+x, y = psb(25, 0); items.append(fp_rect(x - 1.27, y - 1.27, x + 9.5 * P + 1.27, y + P + 1.27, 'F.SilkS'))  # 2x10 outline
+for txt, c, r in (('1', 2, 1), ('2', 2, 0), ('39', 23.2, 1), ('40', 23.2, 0)):
+    x, y = psb(c, r); items.append(fp_text(txt, x, y, 'F.SilkS', 0.7, 0.1))
+for c in FEED:
+    x, y = psb(c - 1.5, 4); items.append(fp_text('G', x, y, 'F.SilkS', 0.8, 0.12))
+for i, c in enumerate(sorted(V_COLS), start=1):
+    x, y = psb(c, 5); items.append(fp_text('V', x, y, 'F.SilkS', 0.8, 0.12))
+    r1 = V_COLS[c][1]; x, y = psb(c, r1 + 1); items.append(fp_text('V', x, y, 'F.SilkS', 0.8, 0.12))
+    x, y = psb(c + 1, r1 + 1); items.append(fp_text('G', x, y, 'F.SilkS', 0.8, 0.12))
+for txt, c, r in (('VIN', 10, 38), ('G', 11, 38), ('V', 8, 26), ('VIN', 8, 27), ('J1', 1.6, 30), ('C1', 4, 31.3), ('C2', 6, 31.3),
+                  ('R1', 7.5, 34), ('LED', 7.5, 37), ('P1', 1.9, 35)):
+    x, y = psb(c, r); items.append(fp_text(txt, x, y, 'F.SilkS', 0.7, 0.1))
+x, y = psb(3.5, 25.5); items.append(fp_text('PSB-1', x, y, 'F.SilkS', 1.2, 0.15))
+items.append(fp_text('ProtoSupplies PSB-1 102 x 102 (V/G bus column pairs, 3- and 6-hole strips, 2x20 + 2x10 headers, DC input)', 0, -48.5, 'F.Fab', 1.0, 0.15))
+items.append(fp_text('${REFERENCE}', 0, 48.5, 'F.Fab'))
+write_fp('ProtoSupplies_PSB-1', footprint(
+    'ProtoSupplies_PSB-1',
+    'ProtoSupplies PSB-1 MCU proto board with DC input: 102 x 102 mm FR-4, 3.5 mm holes on a 91.44 mm square, '
+    '2.54 mm grid of 1.02 mm plated holes with 1.78 mm pads. Pads are named by net: H1-H40 (2x20 header and its '
+    'breakout pads), K1-K20 (staggered 2x10 header), G (all ground columns, the ground band and the DC input ground), '
+    'V1-V7 (the seven V bus columns left to right, each with the feed pad in the V band), VIN (DC input, 2x2 jumper '
+    'bottom row and the VIN column), LED (R1-LED node), a<row>..f<row> (3- or 6-hole strips, rows numbered 1-38 from '
+    'the top). Copper lines reproduce the bus traces for the 3D view only; connectivity in a design still needs tracks. '
+    'Geometry from the vendor dimension drawing and CAD renders; DC input part positions +/-0.15 mm.',
+    'protosupplies psb-1 protoboard proto board', 'through_hole', items, -53, 53))
+
 # ---------------------------------------------------------------- write sym
 os.makedirs(LIB, exist_ok=True)
 with open(os.path.join(LIB, LIBNAME + '.kicad_sym'), 'w') as fh:

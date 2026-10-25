@@ -16,13 +16,18 @@ in the KiCad editors.
 | Lonely Binary TK103 PCM5102A I2S DAC | `TK103_PCM5102A_I2S_DAC` | `TK103_Module_RA_Header` | vendor STEP, see below |
 | Arduino UNO MIDI shield (DIN x3, 6N138) | `MIDI_Shield_DIN5x3_6N138` | stock `Module:Arduino_UNO_R3_WithMountingHoles` | |
 | ElectroCookie full-size breadboard PCB | (mechanical) | `ElectroCookie_Breadboard_Full` | |
+| Adafruit PCM5102 / PCM5100 I2S DAC (6250 / 6251) | `Adafruit_PCM510x_I2S_DAC` | same | VRML + STEP |
+| Adafruit TXB0104 level shifter breakout (1875) | `Adafruit_TXB0104_Level_Shifter` | `Adafruit_TXB0104_Breakout` | VRML + STEP |
+| Adafruit BSS138 4-channel level shifter (757) | `Adafruit_BSS138_4ch_Level_Shifter` | `Adafruit_BSS138_Level_Shifter` | VRML + STEP |
+| Kycon STX-3120-3B 3.5 mm stereo jack (Adafruit 1699) | `AudioJack_3.5mm_STX-3120-3B` | `Jack_3.5mm_Kycon_STX-3120-3B_Horizontal` | VRML + STEP |
+| ProtoSupplies PSB-1 MCU proto board | (mechanical) | `ProtoSupplies_PSB-1` | |
 
 Silkscreen logos (filled polygons on F.SilkS, no pads, excluded from BOM and position files), each in two sizes:
 `Logo_TBD_Full` (40/80 mm), `Logo_TBD_Head` (8/16), `Logo_TBD_Wordmark` (15/30), `Logo_TBD_engineering` (15/30)
 and `Logo_Star` (5/10). Place them like any footprint; flip to the back for B.SilkS.
 
 `docs/components.md` describes each part, cites the source of every dimension, and lists what is still only estimated
-(measure the GC9A01 outline, the KY-040 board and the RP2040-Zero back pads before relying on them).
+(measure the GC9A01 outline, the KY-040 board and the RP2040-Zero back pads before relying on them; on the PSB-1, check with a meter whether the seven V bus columns are one net, see below).
 
 ## Layout
 
@@ -66,7 +71,8 @@ come from several footprints sharing the breadboard holes.
 ```
 python3 tools/gen_lib.py            # lib/tbd.kicad_sym, lib/tbd.pretty/
 python3 tools/gen_teensy_panel.py   # projects/teensy-panel/*
-freecad.cmd tools/build_models.py   # lib/3d/{KY-040_Module,GC9A01_Round_1.28in_7pin,Teensy_4.1_Assembly}.*
+freecad.cmd tools/build_models.py   # lib/3d/*.wrl + .step (KY-040, GC9A01, Teensy colouring, Adafruit breakouts, STX-3120 jack)
+python3 -I tools/eagle_dump.py <board.brd>      # pad/outline/net dump of an Eagle board (how the Adafruit parts were read)
 python3 tools/gen_logos.py artwork/logos.json   # Logo_* footprints (edit "widths" in the spec for other sizes)
 ```
 
@@ -80,10 +86,11 @@ strips the tokens KiCad 9 rejects.
 ## Private overlay
 
 Vendor files without redistribution terms (DFRobot CAD and PDFs, the lcdwiki size drawing, Waveshare images, the
-Lonely Binary guide and TK103 STEP) and the product photos the estimates were made from live in a separate private
+Lonely Binary guide and TK103 STEP, the Kycon and TI datasheets, the ProtoSupplies renders) and the product photos the estimates were made from live in a separate private
 repository. Copy its `overlay/` onto this checkout to get the TK103 3D model; everything else here works without it.
 
 ## Licence
 
-Library content CC-BY-SA 4.0 (with the KiCad library exception), tools MIT; vendored Teensy (MIT) and Espressif
-(CC-BY-SA 4.0) items keep their terms. See `LICENSE.md`.
+Library content CC-BY-SA 4.0 (with the KiCad library exception), tools MIT; vendored Teensy (MIT), Espressif
+(CC-BY-SA 4.0) and Adafruit (CC-BY-SA 3.0, EagleCAD boards in `lib/vendor/adafruit/` with their READMEs) items keep
+their terms. See `LICENSE.md`.

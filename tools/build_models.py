@@ -114,8 +114,69 @@ def teensy():
     return out
 
 
+
+def header_pins(points, z_board=2.54, below=3.0, above=1.5):
+    """Male header pins at the given (x, y) footprint-frame positions (3D y = -footprint y), plastic under the board."""
+    groups = []
+    for x, y in points:
+        y = -y
+        groups.append((box(x - 1.27, x + 1.27, y - 1.27, y + 1.27, z_board - 2.54, z_board), BLACK))
+        groups.append((box(x - 0.32, x + 0.32, y - 0.32, y + 0.32, -below, z_board + above), GOLD))
+    return groups
+
+
+def breakout_pcb(w, h, holes=(), hole_d=2.5, z0=2.54, t=1.6, cy=0.0, colour=BLACK):
+    """Board slab centred on the footprint origin (cy shifts it in 3D y), bottom face at z0, with drilled holes."""
+    pcb = box(-w / 2, w / 2, cy - h / 2, cy + h / 2, z0, z0 + t)
+    for hx, hy in holes:
+        pcb = pcb.cut(cyl(hole_d / 2, t + 1, (hx, -hy, z0 - 0.5)))
+    return [(pcb, colour)]
+
+
+# ---------------------------------------------------------------- Adafruit breakouts (geometry from the Eagle boards)
+def adafruit_pcm510x():
+    z = 2.54
+    g = breakout_pcb(30.48, 20.32, [(sx * 12.7, sy * 7.62) for sx in (-1, 1) for sy in (-1, 1)], z0=z)
+    g += header_pins([(-8.89 + 2.54 * i, 7.62) for i in range(8)] + [(-6.35 + 2.54 * i, -7.62) for i in range(6)], z)
+    top = z + 1.6
+    g.append((box(4.0, 15.24, -3.0, 3.0, top, top + 5.0), BLACK))                     # PJ-332A jack body
+    g.append((cyl(2.4, 1.6, (15.24, 0, top + 2.5), (1, 0, 0)), BLACK))                # barrel past the edge
+    g.append((box(-5.3, 1.1, -3.2, 3.2, top, top + 1.1), DARK))                       # PCM510x TSSOP-20 (rotated)
+    g.append((box(-14.0, -11.5, -3.6, 0.4, top, top + 1.0), DARK))                    # AP2127 regulator
+    return g
+
+
+def adafruit_txb0104():
+    z = 2.54
+    g = breakout_pcb(12.7, 17.78, z0=z)
+    g += header_pins([(-5.08, -6.35 + 2.54 * i) for i in range(6)] + [(5.08, -6.35 + 2.54 * i) for i in range(6)], z)
+    g.append((box(-2.5, 2.5, -2.2, 2.2, z + 1.6, z + 2.7), DARK))                     # TXB0104 TSSOP-14
+    return g
+
+
+def adafruit_bss138():
+    z = 2.54
+    g = breakout_pcb(15.24, 20.447, z0=z, cy=0.0635)
+    g += header_pins([(-5.08, -6.35 + 2.54 * i) for i in range(6)] + [(5.08, -6.35 + 2.54 * i) for i in range(6)], z)
+    for x, y in ((-1.5, 1.8), (1.8, -0.7), (2.0, 3.0), (-1.8, 6.1)):                  # four SOT-23 FETs
+        g.append((box(x - 1.5, x + 1.5, y - 0.7, y + 0.7, z + 1.6, z + 2.7), DARK))
+    return g
+
+
+def stx3120():
+    """Kycon STX-3120-3B jack in the footprint frame: pin 1 at the origin, opening toward footprint -Y (3D +Y)."""
+    body = box(-6.0, 6.0, -7.6, 3.0, 0.0, 10.0)
+    body = body.fuse(cyl(3.4, 3.5, (0, 3.0, 6.5), (0, 1, 0)))                          # bezel
+    body = body.cut(cyl(1.8, 12.0, (0, 6.6, 6.5), (0, -1, 0)))                         # plug hole
+    g = [(body, BLACK)]
+    for x, y in ((0, 0), (-5.0, -5.0), (5.0, -5.0)):
+        g.append((box(x - 0.5, x + 0.5, y - 0.25, y + 0.25, -3.5, 0.5), SILVER))
+    return g
+
 for name, builder, step in (('KY-040_Module', ky040, True), ('GC9A01_Round_1.28in_7pin', gc9a01, True),
-                            ('Teensy_4.1_Assembly', teensy, False)):
+                            ('Teensy_4.1_Assembly', teensy, False),
+                            ('Adafruit_PCM510x_I2S_DAC', adafruit_pcm510x, True), ('Adafruit_TXB0104_Breakout', adafruit_txb0104, True),
+                            ('Adafruit_BSS138_Level_Shifter', adafruit_bss138, True), ('STX-3120-3B', stx3120, True)):
     g = builder()
     write_vrml(os.path.join(OUT, name + '.wrl'), g)
     if step:

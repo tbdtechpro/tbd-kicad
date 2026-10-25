@@ -15,8 +15,13 @@ dimension and what is still unverified. Regenerate the library with `python3 too
 | TK103 PCM5102A I2S DAC | `TK103_PCM5102A_I2S_DAC` | `TK103_Module_RA_Header` + STEP | exact (vendor STEP) |
 | MIDI shield (K194725ASJH) | `MIDI_Shield_DIN5x3_6N138` | stock `Module:Arduino_UNO_R3_WithMountingHoles` | exact (UNO header pattern) |
 | ElectroCookie full breadboard | none (mechanical) | `ElectroCookie_Breadboard_Full` | outline/holes exact, rail length approximate |
+| Adafruit PCM510x I2S DAC | `Adafruit_PCM510x_I2S_DAC` | `Adafruit_PCM510x_I2S_DAC` + VRML/STEP | exact (Adafruit EagleCAD board) |
+| Adafruit TXB0104 breakout | `Adafruit_TXB0104_Level_Shifter` | `Adafruit_TXB0104_Breakout` + VRML/STEP | exact (Adafruit EagleCAD board) |
+| Adafruit BSS138 4-ch level shifter | `Adafruit_BSS138_4ch_Level_Shifter` | `Adafruit_BSS138_Level_Shifter` + VRML/STEP | exact (Adafruit EagleCAD board) |
+| Kycon STX-3120-3B 3.5 mm jack | `AudioJack_3.5mm_STX-3120-3B` | `Jack_3.5mm_Kycon_STX-3120-3B_Horizontal` + VRML/STEP | exact (Kycon drawing) |
+| ProtoSupplies PSB-1 proto board | none (mechanical) | `ProtoSupplies_PSB-1` | outline/holes/grid exact, input-section parts +/-0.15 mm, V-rail continuity unverified |
 
-Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: CC-BY-SA 4.0); 3D models in `lib/3d/`. Vendor documents and models without redistribution terms (DFRobot CAD/PDFs, lcdwiki drawing, Waveshare images, Lonely Binary guide and STEP) stay in the private overlay repo and are only linked here. Footprints reference models as
+Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: CC-BY-SA 4.0; Adafruit EagleCAD boards: CC-BY-SA 3.0); 3D models in `lib/3d/`. Vendor documents and models without redistribution terms (DFRobot CAD/PDFs, lcdwiki drawing, Waveshare images, Lonely Binary guide and STEP) stay in the private overlay repo and are only linked here. Footprints reference models as
 `${KIPRJMOD}/../../lib/3d/...`, which resolves for any project under `projects/<name>/`.
 
 ## Teensy 4.1 (PJRC)
@@ -117,3 +122,61 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
   the right end's pair to the two inner (+) rails; bridge a pair with solder to join left and right rails.
   Positions are read from photos (about 2.5 mm inside the M3 hole, 2.54 mm apart).
 - Drawn horizontally (row 1 left, A at the bottom); rotate 270 in pcbnew for the vertical, row-1-up view.
+
+## Adafruit PCM5102 / PCM5100 I2S DAC breakout (6250 / 6251)
+
+- TI PCM5102A (112 dB) or PCM5100A (100 dB), pin-compatible boards. VIN 3.3-5 V through an AP2127 3.3 V LDO whose
+  output is on the 3V pin; logic is 3.3 V only. I2S in on BCK/WSEL/DIN, MCK optional (PLL from BCK). Line-level
+  Lout/Rout plus a PJ-332A 3.5 mm jack: not AC-coupled, 1 k load minimum, not for headphones. DE (de-emphasis),
+  FIL (filter), MU (mute, pull low), FM (format, high = left-justified) have onboard 10 k pulls.
+- Geometry from the Adafruit EagleCAD board (`lib/vendor/adafruit/PCM510x-I2S-DAC/`, CC-BY-SA): 30.48 x 20.32 mm,
+  R2.54 corners, plated 2.5 mm holes at (+/-12.7, +/-7.62). 8-pin header VIN GND WSEL DIN BCK Lout G Rout at
+  y = +7.62 (x = -8.89 ... +8.89), 6-pin header DE FIL MCK MU FM 3V at y = -7.62 (x = -6.35 ... +6.35), 1.0 mm drills.
+  Jack body on the right edge, barrel 1.6 mm proud. Symbol pins are numbered 1-8 and 9-14 in that silkscreen order.
+- 3D model built by `tools/build_models.py` (black PCB on headers, jack, chip, regulator).
+
+## Adafruit TXB0104 bi-directional level shifter breakout (1875)
+
+- TI TXB0104, auto direction sensing, LV 1.2-3.6 V, HV 1.7-5.5 V, OE pulled up on board. Not for I2C or any bus with
+  pull-ups under 50 k.
+- From the Adafruit EagleCAD board (`lib/vendor/adafruit/TXB0104-Breakout/`): 12.7 x 17.78 mm, R2.54 corners, two 1x6
+  headers at x = +/-5.08, pins at y = -6.35 ... +6.35, 1.0 mm drills, no mounting hole. Left top to bottom LV A1 A2 A3
+  A4 OE (pins 1-6), right HV B1 B2 B3 B4 GND (pins 7-12).
+
+## Adafruit 4-channel BSS138 level shifter (757)
+
+- Four BSS138 FETs with 10 k pull-ups to LV and HV (NXP AN10441 scheme): I2C-safe, LV down to 1.8 V, HV to 10 V,
+  slow (SPI under about 2 MHz). The two GND pins are joined on the board.
+- From the Adafruit EagleCAD board (`lib/vendor/adafruit/BSS138-4ch-Level-Shifter/`): 15.24 x 20.45 mm, headers at
+  x = +/-5.08 with pins at y = -6.35 ... +6.35 (the header row centre is 10.16 mm above the bottom edge, 10.29 below
+  the top). Left LV A1 A2 A3 A4 GND (1-6), right HV B1 B2 B3 B4 GND (7-12).
+
+## Kycon STX-3120-3B 3.5 mm stereo jack (Adafruit 1699)
+
+- All-plastic right-angle jack, spring contacts, no switch pins (the 5B variant adds pins 3 and 4). Adafruit sells it
+  as the "breadboard-friendly" jack: the 5.0 mm pin spacing fits 0.1" holes.
+- From the Kycon drawing (STX3120.pdf, private overlay `reference/docs/`): body 12.0 wide, 10.0 tall, 14.1 deep of
+  which 3.5 is the 6.8 mm bezel; plug hole 3.6 mm at 6.5 mm above the PCB. Pin 1 (sleeve) centred 3.0 mm behind the
+  bezel; pins 2 (tip, left looking into the jack) and 5 (ring) 5.0 mm further back at +/-5.0 mm; pins 1.0 x 0.5 mm
+  (1.1 mm drills). Footprint origin at pin 1, opening toward -Y; place it so the bezel clears the board edge.
+
+## ProtoSupplies PSB-1 MCU proto board with DC input
+
+- 102 x 102 mm FR-4, 1.6 mm, ENIG, four 3.5 mm holes on a 91.44 mm square (vendor dimension drawing). The 2.54 mm grid
+  is 38 x 38 positions centred on the board; the holes sit half a pitch outside the outer rows/columns (checked on
+  the vendor CAD renders, where they land at grid (0.5, 0.5)). 1.02 mm plated holes, 1.78 mm pads.
+- Layout, read from the front/back CAD renders (private overlay `reference/photos/PSB-1-*`), column C / row R from 0
+  at the top-left: 2x20 header at rows 0-1, columns 3-22 (pin 1 bottom-left, odd pins in row 1) with breakout pads
+  in rows 2-3 (row 2 joins the odd pins, row 3 the even); staggered 2x10 header at columns 25-34 (rows 0/2 shifted
+  +1.27 mm) with breakout pads below; ground band (back-side trace) at row 4 and V band (front-side, one segment per
+  column group) at row 5, each with feed pads at columns 3 8 15 22 29 34; V/G column pairs at C0/1, 5/6, 10/11, 18/19,
+  26/27, 31/32, 36/37; 3-hole strips at C2-4, C7-9 (rows 6-24), C28-30, C33-35 (rows 6-33); 6-hole strips at C12-17
+  and C20-25 (rows 6-37); 2x2 VIN/V jumper at C9-10 rows 26-27 (top row = V of column 10), VIN column at C10 rows
+  28-37. DC input section bottom-left (DC-005 jack P1, JST J1, C1 100 uF at 2 mm, C2 100 nF, R1 1 k, 3 mm LED);
+  nets from the vendor schematic, positions +/-0.15 mm from the render; LED polarity read from the silk, verify.
+- Pad names are nets: `H1-H40`, `K1-K20`, `G`, `V1-V7` (left to right), `VIN`, `LED`, `a<row>`..`f<row>` for the
+  strips (rows 1-38 from the top). **The renders show the seven V rails as separate copper segments**, each with its
+  own feed pad, while the vendor schematic draws a single V net; measure the board and set `PSB_V_COMMON = True` in
+  `tools/gen_lib.py` if they are joined. Copper lines in the footprint only illustrate the buses; a design still
+  needs board-level tracks for connectivity (same as the ElectroCookie footprint).
+
