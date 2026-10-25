@@ -1,0 +1,57 @@
+{
+  "board": {
+    "design_settings": {
+      "defaults": {},
+      "rule_severities": {},
+      "rules": {}
+    },
+    "layer_presets": [],
+    "viewports": []
+  },
+  "boards": [],
+  "cvpcb": {
+    "equivalence_files": []
+  },
+  "libraries": {
+    "pinned_footprint_libs": [
+      "tbd"
+    ],
+    "pinned_symbol_libs": [
+      "tbd"
+    ]
+  },
+  "meta": {
+    "filename": "teensy-panel.kicad_pro",
+    "version": 3
+  },
+  "net_settings": {
+    "classes": [
+      {
+        "name": "Default",
+        "clearance": 0.2,
+        "track_width": 0.25,
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "diff_pair_width": 0.2,
+        "diff_pair_gap": 0.25
+      }
+    ],
+    "meta": {
+      "version": 4
+    }
+  },
+  "pcbnew": {
+    "page_layout_descr_file": ""
+  },
+  "schematic": {
+    "legacy_lib_dir": "",
+    "legacy_lib_list": []
+  },
+  "sheets": [
+    [
+      "8ca6d215-4ee6-4419-b1fc-4e9cd923ed02",
+      "Root"
+    ]
+  ],
+  "text_variables": {}
+}

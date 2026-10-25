@@ -1,0 +1,12 @@
+# KiCad side files
+*.kicad_prl
+*-backups/
+fp-info-cache
+*.lck
+~*
+*.bak
+*-bak
+# Python / FreeCAD scratch
+__pycache__/
+*.pyc
+.freecad-tmp/
