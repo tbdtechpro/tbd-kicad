@@ -17,6 +17,10 @@ in the KiCad editors.
 | Arduino UNO MIDI shield (DIN x3, 6N138) | `MIDI_Shield_DIN5x3_6N138` | stock `Module:Arduino_UNO_R3_WithMountingHoles` | |
 | ElectroCookie full-size breadboard PCB | (mechanical) | `ElectroCookie_Breadboard_Full` | |
 
+Silkscreen logos (filled polygons on F.SilkS, no pads, excluded from BOM and position files), each in two sizes:
+`Logo_TBD_Full` (40/80 mm), `Logo_TBD_Head` (8/16), `Logo_TBD_Wordmark` (15/30), `Logo_TBD_engineering` (15/30)
+and `Logo_Star` (5/10). Place them like any footprint; flip to the back for B.SilkS.
+
 `docs/components.md` describes each part, cites the source of every dimension, and lists what is still only estimated
 (measure the GC9A01 outline, the KY-040 board and the RP2040-Zero back pads before relying on them).
 
@@ -27,6 +31,7 @@ lib/tbd.kicad_sym         all symbols                     <- tools/gen_lib.py
 lib/tbd.pretty/           all footprints                  <- tools/gen_lib.py
 lib/3d/                   STEP + VRML models              <- tools/build_models.py (FreeCAD) and XenGi
 lib/vendor/               redistributable upstream files the generator reads (licences alongside)
+artwork/                  logo sources + logos.json spec           -> tools/gen_logos.py
 docs/components.md        part reference and dimension sources
 projects/teensy-panel/    Teensy 4.1 + GC9A01 + KY-040 + TK103 on an ElectroCookie board
 tools/                    generators
@@ -62,7 +67,11 @@ come from several footprints sharing the breadboard holes.
 python3 tools/gen_lib.py            # lib/tbd.kicad_sym, lib/tbd.pretty/
 python3 tools/gen_teensy_panel.py   # projects/teensy-panel/*
 freecad.cmd tools/build_models.py   # lib/3d/{KY-040_Module,GC9A01_Round_1.28in_7pin,Teensy_4.1_Assembly}.*
+python3 tools/gen_logos.py artwork/logos.json   # Logo_* footprints (edit "widths" in the spec for other sizes)
 ```
+
+`gen_logos.py` traces the ink with potrace, scales it, fractures holes with KiCad's polygon engine and writes one
+filled `fp_poly` per piece. Pixel art is traced with smoothing off (`alphamax: 0`); smooth artwork with it on.
 
 Checks used: `kicad-cli sym export svg`, `kicad-cli fp export svg`, `kicad-cli sch erc`, `kicad-cli pcb render`, and
 `pcbnew` from Python for connectivity. Needs KiCad 9.0.x; the Espressif upstream is in KiCad 10 format and the generator

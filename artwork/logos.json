@@ -1,0 +1,15 @@
+[
+  {"name": "Logo_TBD_Full", "image": "tbd-engineering-logo.png", "ink": "light", "alphamax": 0.6, "widths": [40, 80],
+   "description": "TBD engineering logo: pixel pterodactyl head, IBM-style TBD wordmark and engineer.ing in OCR-X."},
+  {"name": "Logo_TBD_Head", "image": "tbd-engineering-logo.png", "ink": "light", "alphamax": 0, "widths": [8, 16],
+   "region": {"x_max": 1018},
+   "description": "TBD engineering pixel pterodactyl head."},
+  {"name": "Logo_TBD_Wordmark", "image": "tbd-engineering-logo.png", "ink": "light", "alphamax": 0.6, "widths": [15, 30],
+   "region": {"x_min": 1018, "split": "top"},
+   "description": "TBD IBM-style striped wordmark."},
+  {"name": "Logo_TBD_engineering", "image": "tbd-engineering-logo.png", "ink": "light", "alphamax": 1.0, "widths": [15, 30],
+   "region": {"x_min": 1018, "split": "bottom"},
+   "description": "engineer.ing in OCR-X."},
+  {"name": "Logo_Star", "image": "star.png", "ink": "dark", "alphamax": 1.0, "widths": [5, 10],
+   "description": "Four-point diamond star."}
+]
