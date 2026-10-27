@@ -252,6 +252,8 @@ for kind, pad in (('THT', lambda n, x, y: pad_tht(n, x, y, 1.5, 0.9, 'rect' if n
     items.append(fp_rect(-11.4, -13.3, 11.4, 13.85, 'F.CrtYd', 0.05))
     items.append(fp_text('1=GND 3V3 0 1 4 5 8 9 | 16=BAT GND VCC 27 26 19 18 9=16', 0, 10.5, 'F.Fab', 0.6, 0.1))
     items.append(fp_text('${REFERENCE}', 0, 0, 'F.Fab'))
+    if kind == 'THT':
+        items.append(model(MODEL + 'Beetle_RP2350_DFR1188.wrl'))             # built by tools/build_models.py
     write_fp('Beetle_RP2350_DFR1188_' + kind, footprint(
         'Beetle_RP2350_DFR1188_' + kind,
         'DFRobot Beetle RP2350 (DFR1188), ' + ('through-hole pads for header mounting' if kind == 'THT' else
@@ -293,6 +295,7 @@ for x in (-22, 22):
 items.append(fp_text('J2: 1=VCC 2=GND 3=CS 4=RESET 5=DC 6=MOSI 7=SCK 8=LED 9=MISO 10-14=touch', 0, 38.5, 'F.Fab', 0.8, 0.12))
 items.append(fp_text('J4: 15=SD_CS 16=SD_MOSI 17=SD_MISO 18=SD_SCK', 0, -38.8, 'F.Fab', 0.8, 0.12))
 items.append(fp_text('${REFERENCE}', 0, -10, 'F.Fab'))
+items.append(model(MODEL + 'TFT_2.8in_ILI9341_SPI_MSP2806.wrl'))        # built by tools/build_models.py
 write_fp('TFT_2.8in_ILI9341_SPI_MSP2806', footprint(
     'TFT_2.8in_ILI9341_SPI_MSP2806',
     '2.8 inch ILI9341 SPI TFT module, 50 x 86 mm PCB, 14-pin header 2.00 mm from the bottom edge starting 8.49 mm from '
@@ -406,6 +409,7 @@ for i, n in enumerate(rpz_back):
 items.append(fp_text('1=5V', -7.62, -12.4, 'F.Fab', 0.6, 0.1))
 items.append(fp_text('back pads 24-33 approx.', 0, 0, 'F.Fab', 0.7, 0.1))
 items.append(fp_text('${REFERENCE}', 0, 3, 'F.Fab', 0.8, 0.12))
+items.append(model(MODEL + 'RP2040-Zero.wrl'))                          # built by tools/build_models.py
 write_fp('RP2040-Zero', footprint(
     'RP2040-Zero',
     'Waveshare RP2040-Zero outline 18 x 23.5 mm (R1 corners), 23 castellated edge pins at 2.54 mm pitch, side '
@@ -424,7 +428,8 @@ symbols.append(vendored_symbol(
 vendored_footprint(os.path.join(VENDOR, 'espressif', 'ESP32-S3-DevKitC.kicad_mod'), 'ESP32-S3-DevKitC-1',
                    'ESP32-S3-DevKitC-1: 2 x 22 through-holes at 2.54 mm, rows 22.86 mm apart; pad 1 (3V3) at origin, '
                    'pad 44 (GND) at the top of the other row. From espressif/kicad-libraries (CC-BY-SA 4.0).',
-                   'esp32-s3 devkitc')
+                   'esp32-s3 devkitc',
+                   model_path=MODEL + 'ESP32-S3-DevKitC-1.wrl')
 
 # --- Lonely Binary TK103 PCM5102A I2S DAC ----------------------------------
 tk_left = [('2', '3V3', 'power_in'), ('3', 'BCK', 'input'), ('4', 'DIN', 'input'), ('5', 'LRCK', 'input'),

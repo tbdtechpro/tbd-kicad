@@ -7,14 +7,14 @@ in the KiCad editors.
 | Part | Symbol | Footprint | 3D |
 |---|---|---|---|
 | PJRC Teensy 4.1 | `Teensy_4.1` | `Teensy41` | coloured VRML + STEP |
-| DFRobot Beetle RP2350 (DFR1188) | `Beetle_RP2350_DFR1188` | `..._THT`, `..._SMD` | |
-| 2.8" ILI9341 SPI TFT (lcdwiki MSP2806/2807) | `TFT_2.8in_ILI9341_SPI_MSP2806` | same | |
+| DFRobot Beetle RP2350 (DFR1188) | `Beetle_RP2350_DFR1188` | `..._THT`, `..._SMD` | VRML + STEP (THT) |
+| 2.8" ILI9341 SPI TFT (lcdwiki MSP2806/2807) | `TFT_2.8in_ILI9341_SPI_MSP2806` | same | VRML + STEP |
 | 1.28" round GC9A01, 7-pin | `GC9A01_Round_1.28in_7pin` | same | VRML + STEP |
 | KY-040 rotary encoder module | `KY-040_Rotary_Encoder_Module` | `KY-040_Module_RA_Header` | VRML + STEP |
-| RP2040-Zero form factor | `RP2040-Zero` | same | |
-| ESP32-S3-DevKitC-1 | `ESP32-S3-DevKitC-1` | same | |
+| RP2040-Zero form factor | `RP2040-Zero` | same | VRML + STEP |
+| ESP32-S3-DevKitC-1 | `ESP32-S3-DevKitC-1` | same | VRML + STEP |
 | Lonely Binary TK103 PCM5102A I2S DAC | `TK103_PCM5102A_I2S_DAC` | `TK103_Module_RA_Header` | vendor STEP, see below |
-| Arduino UNO MIDI shield (DIN x3, 6N138) | `MIDI_Shield_DIN5x3_6N138` | stock `Module:Arduino_UNO_R3_WithMountingHoles` | |
+| Arduino UNO MIDI shield (DIN x3, 6N138) | `MIDI_Shield_DIN5x3_6N138` | stock `Module:Arduino_UNO_R3_WithMountingHoles` | `MIDI_Shield_UNO` VRML + STEP (add to the footprint by hand) |
 | ElectroCookie full-size breadboard PCB | (mechanical) | `ElectroCookie_Breadboard_Full` | |
 | Adafruit PCM5102 / PCM5100 I2S DAC (6250 / 6251) | `Adafruit_PCM510x_I2S_DAC` | same | VRML + STEP |
 | Adafruit TXB0104 level shifter breakout (1875) | `Adafruit_TXB0104_Level_Shifter` | `Adafruit_TXB0104_Breakout` | VRML + STEP |
@@ -39,6 +39,7 @@ lib/vendor/               redistributable upstream files the generator reads (li
 artwork/                  logo sources + logos.json spec           -> tools/gen_logos.py
 docs/components.md        part reference and dimension sources
 projects/teensy-panel/    Teensy 4.1 + GC9A01 + KY-040 + TK103 on an ElectroCookie board
+projects/parts-preview/   mock PCB with every other part placed, for the 3D viewer  <- tools/gen_parts_preview.py
 tools/                    generators
 ```
 
@@ -71,6 +72,7 @@ come from several footprints sharing the breadboard holes.
 ```
 python3 tools/gen_lib.py            # lib/tbd.kicad_sym, lib/tbd.pretty/
 python3 tools/gen_teensy_panel.py   # projects/teensy-panel/*
+python3 tools/gen_parts_preview.py  # projects/parts-preview/* (PCB only, no schematic)
 freecad.cmd tools/build_models.py   # lib/3d/*.wrl + .step (KY-040, GC9A01, Teensy colouring, Adafruit breakouts, STX-3120 jack)
 python3 -I tools/eagle_dump.py <board.brd>      # pad/outline/net dump of an Eagle board (how the Adafruit parts were read)
 python3 tools/gen_logos.py artwork/logos.json   # Logo_* footprints (edit "widths" in the spec for other sizes)
