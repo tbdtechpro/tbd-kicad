@@ -489,6 +489,32 @@ def tft_28():
     return g
 
 
+def oled_15():
+    """1.5 inch SH1107 OLED I2C module: blue 34 x 47 x 1.2 PCB on its 4-pin header (fp y = -22.08), glass on top,
+    boost converter parts on the back."""
+    g = []
+    z = 2.54; t = 1.2; top = z + t
+    W, H = 34.0, 47.0
+    pins = [(3.81 - 2.54 * i, -H / 2 + 1.42) for i in range(4)]
+    holes = [(sx * (W / 2 - 2.7), sy * (H / 2 - 3.0)) for sx in (-1, 1) for sy in (-1, 1)]
+    pcb = drill(drill(pcb_slab(W, H, z, t, radius=1.0), holes, 1.5), pins, 0.5)
+    g.append((pcb, BLUE))
+    header_pins(g, pins, z)
+    pads(g, pins, z, t, square=(0,)); pads(g, holes, z, t, 2.3, 1.5)
+    pin_labels(g, ('VCC', 'GND', 'SCL', 'SDA'), pins, top, 0.6, 0, (0, -1.6))
+    gy0, gy1 = -H / 2 + 4.1, -H / 2 + 4.1 + 37.2                                                   # fp y of the glass
+    g.append((box(-17.1, 17.1, -gy1, -gy0, top, top + 1.25), GLASS))                              # glass 34.2 x 37.2
+    ay = -H / 2 + 20.5
+    g.append((box(-13.43, 13.43, -ay - 13.43, -ay + 13.43, top + 1.25, top + 1.3), NAVY))        # active area 26.86 sq
+    g.append((box(-7.0, 7.0, -gy1 - 1.6, -gy1 + 0.2, top, top + 0.3), GOLD))                      # FPC onto the PCB
+    g.append((box(-2.0, 2.0, 2.0, 6.0, z - 2.0, z), DARK))                                          # L1 boost inductor (back)
+    sot23(g, -3.5, 7.5, z - 1.1, 0, 5)                                                              # U7 regulator (back)
+    for i in range(5):
+        passive(g, 2.0 + 2.6 * i, 7.5, z - 0.7, 1.6, 0.8, 0.6, DARK if i % 2 else TAN, 0)
+    silk(g, 'GME128128-01-IIC', -14.0, 2.0, z - 0.02, 0.9, 90, WHITE, 'xy')
+    return g
+
+
 def esp32_s3_devkitc():
     """ESP32-S3-DevKitC-1 in the Espressif footprint frame: pin 1 at the origin, pins down +Y, 2nd row at x = 22.86."""
     g = []
@@ -626,7 +652,7 @@ for name, builder, step in (('KY-040_Module', ky040, True), ('GC9A01_Round_1.28i
                             ('Adafruit_PCM510x_I2S_DAC', adafruit_pcm510x, True), ('Adafruit_TXB0104_Breakout', adafruit_txb0104, True),
                             ('Adafruit_BSS138_Level_Shifter', adafruit_bss138, True), ('STX-3120-3B', stx3120, True),
                             ('Beetle_RP2350_DFR1188', beetle_rp2350, True), ('RP2040-Zero', rp2040_zero, True),
-                            ('TFT_2.8in_ILI9341_SPI_MSP2806', tft_28, True), ('ESP32-S3-DevKitC-1', esp32_s3_devkitc, True),
+                            ('TFT_2.8in_ILI9341_SPI_MSP2806', tft_28, True), ('OLED_1.5in_SH1107_I2C', oled_15, True), ('ESP32-S3-DevKitC-1', esp32_s3_devkitc, True),
                             ('RP2350B-Plus-W', rp2350b_plus_w, True),
                             ('DIN-5_PCB_Socket', din5_socket, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
     g = builder()

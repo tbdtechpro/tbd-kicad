@@ -303,6 +303,45 @@ write_fp('TFT_2.8in_ILI9341_SPI_MSP2806', footprint(
     'the top/side edges. Dimensions from lcdwiki MSP2806_Size.pdf V1.0 (2024-04-11).',
     'tft lcd ili9341 2.8', 'through_hole', items, -45, 45))
 
+# --- 1.5" 128x128 SH1107 OLED, I2C 4-pin (HiLetgo, Golden Morning GME128128-01-IIC VER:2.0) --------------------
+OLED_W, OLED_H = 34.0, 47.0                 # PCB by calipers (the glass overhangs to 34.2)
+OLED_PIN_Y = -OLED_H / 2 + 1.42             # header body sits 0.15 mm below the top edge, so pins at 1.27 + 0.15 (calipers)
+OLED_HOLE = (OLED_W / 2 - 2.7, OLED_H / 2 - 3.0)   # 3 mm holes: 1.2 mm from the side edge, 1.5 mm from the end edge (calipers)
+OLED_PINS = ['VCC', 'GND', 'SCL', 'SDA']    # pin 1 = VCC at the right in the front view (back silk: VCC GND SCL SDA)
+symbols.append(box_symbol(
+    'OLED_1.5in_SH1107_128x128_I2C', 'DS', [('1', 'VCC', 'power_in'), ('2', 'GND', 'power_in')],
+    [('3', 'SCL', 'input'), ('4', 'SDA', 'bidirectional')],
+    f'{LIBNAME}:OLED_1.5in_SH1107_128x128_I2C',
+    'https://goldenmorninglcd.com/oled-display-module/1.5-inch-128x128-sh1107-gme128128-01/',
+    '1.5 inch 128x128 white OLED module, SH1107, I2C (4-pin header VCC GND SCL SDA, address 0x3C/0x3D), 3-5 V. '
+    'Golden Morning GME128128-01-IIC VER:2.0 as sold by HiLetgo, 34 x 47 mm; active area 26.86 x 26.86 mm.',
+    'oled sh1107 128x128 1.5 i2c iic display', 'OLED_1.5in*'))
+items = []
+hw, hh = OLED_W / 2, OLED_H / 2
+for layer in ('F.Fab', 'F.SilkS'):
+    items.append(fp_rect(-hw, -hh, hw, hh, layer, 0.1 if layer == 'F.Fab' else 0.12))
+items.append(fp_rect(-hw - 0.35, -hh - 0.25, hw + 0.35, hh + 0.25, 'F.CrtYd', 0.05))
+items.append(fp_rect(-17.1, -hh + 4.1, 17.1, -hh + 4.1 + 37.2, 'F.Fab', 0.1))            # glass 34.2 x 37.2 (calipers), overhangs the PCB 0.1 each side
+items.append(fp_rect(-13.43, -hh + 20.5 - 13.43, 13.43, -hh + 20.5 + 13.43, 'F.Fab', 0.1))   # active area 26.86 square
+items.append(fp_text('1.5in OLED 128x128 active area', 0, -hh + 20.5, 'F.Fab', 1.2, 0.15))
+for i, name in enumerate(OLED_PINS):
+    items.append(pad_tht(i + 1, 3.81 - 2.54 * i, OLED_PIN_Y, shape='rect' if i == 0 else 'circle'))
+for sx in (-1, 1):
+    for sy in (-1, 1):
+        items.append(pad_npth(sx * OLED_HOLE[0], sy * OLED_HOLE[1], 3.0))
+        items.append(fp_circle(sx * OLED_HOLE[0], sy * OLED_HOLE[1], 2.2, 'F.Fab', 0.1))
+items.append(fp_text('1=VCC 2=GND 3=SCL 4=SDA (pin 1 at the right, front view)', 0, -hh + 2.9, 'F.Fab', 0.7, 0.1))
+items.append(fp_text('${REFERENCE}', 0, hh - 3.0, 'F.Fab'))
+items.append(model(MODEL + 'OLED_1.5in_SH1107_I2C.wrl'))                      # built by tools/build_models.py
+write_fp('OLED_1.5in_SH1107_128x128_I2C', footprint(
+    'OLED_1.5in_SH1107_128x128_I2C',
+    '1.5 inch SH1107 128x128 OLED module with a 4-pin I2C header (GME128128-01-IIC VER:2.0 / HiLetgo), front view: '
+    '34 x 47 mm PCB, header 1.42 mm from the top edge centred (VCC at the right), four 3 mm holes 2.7 mm from the side '
+    'and 3.0 mm from the end edges, glass 34.2 x 37.2 (0.1 mm overhang each side) from 4.1 mm below the top edge. PCB, '
+    'holes, header and glass by calipers; the glass offset from photos. The vendor drawing on the product page is the '
+    '9-pin SPI variant.',
+    'oled sh1107 1.5 i2c', 'through_hole', items, -hh - 2, hh + 2))
+
 # --- 1.28" round GC9A01, 7-pin header -------------------------------------
 gc_left = [('1', 'VCC', 'power_in'), ('3', 'SCL', 'input'), ('4', 'SDA', 'input'), ('5', 'DC', 'input'),
            ('6', 'CS', 'input'), ('7', 'RST', 'input'), ('2', 'GND', 'power_in')]

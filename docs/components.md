@@ -8,6 +8,7 @@ dimension and what is still unverified. Regenerate the library with `python3 too
 | Teensy 4.1 | `Teensy_4.1` (67 pins) | `Teensy41` + STEP | exact (XenGi libraries, MIT) |
 | DFRobot Beetle RP2350 | `Beetle_RP2350_DFR1188` | `Beetle_RP2350_DFR1188_THT`, `_SMD` | exact (pad pitch/rows from DFRobot CAD V1.0, redrawn) |
 | 2.8" ILI9341 SPI TFT | `TFT_2.8in_ILI9341_SPI_MSP2806` | `TFT_2.8in_ILI9341_SPI_MSP2806` | exact (lcdwiki MSP2806_Size.pdf) |
+| 1.5" SH1107 OLED I2C | `OLED_1.5in_SH1107_128x128_I2C` | `OLED_1.5in_SH1107_128x128_I2C` + VRML/STEP | PCB, holes, header, glass by calipers |
 | 1.28" round GC9A01, 7-pin | `GC9A01_Round_1.28in_7pin` | `GC9A01_Round_1.28in_7pin` | header exact, outline approximate |
 | KY-040 encoder module | `KY-040_Rotary_Encoder_Module` | `KY-040_Module_RA_Header` | header exact, module size approximate |
 | RP2040-Zero form factor | `RP2040-Zero` | `RP2040-Zero` | edge pins exact (Waveshare drawing), back pads approximate |
@@ -152,6 +153,17 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
 - Footprints `DIN-5_180deg_PCB_Socket` (pin 2 at the origin, opening toward -Y, pins 14.5 mm behind the face, three
   shell lugs) and `SW_Slide_SPDT_P2.5mm_Lugs` (actuator toward +Y; the 2.5 mm pitch is read from photos) are the
   parts the shield is built from.
+
+## 1.5" SH1107 128x128 OLED, I2C (HiLetgo listing; board marking GME128128-01-IIC VER:2.0)
+
+- Golden Morning's product page documents the 9-pin SPI variant (35.69 x 46.74 mm, drawing and pin table saved in the
+  private repo); the I2C board on hand is a different PCB: 4-pin header (front silk SDA SCL GND VCC, back silk VCC GND
+  SCL SDA = pins 1-4), four corner holes, boost converter on the back.
+- Calipers: PCB 34.0 x 47.0 mm, glass 34.2 x 37.2 mm (overhangs the PCB 0.1 mm each side), 3 mm holes with the hole
+  edge 1.2 mm from the side edge and 1.5 mm from the end edge (centres 2.7 / 3.0 mm in; the hole-to-hole spacing is
+  the reliable figure, the panel cut varies), header centred with its body 0.15 mm below the top edge (pins 1.42 mm in).
+- Footprint frame: front view, board centre at the origin, pin 1 (VCC) at the right, glass starting 4.1 mm below the
+  top edge (photo), active area 26.86 mm square centred 20.5 mm below the top edge.
 
 ## ElectroCookie full-size breadboard PCB
 

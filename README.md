@@ -22,6 +22,7 @@ it under CC-BY-SA 4.0 with the KiCad library exception: designs made with it are
 | Waveshare RP2350B-Plus-W (Pico 2 W form factor, RP2350B) | `RP2350B-Plus-W` | `RP2350B-Plus-W` | VRML + STEP | Waveshare drawing + board (pins exact, back pads +/-0.3 mm) |
 | **Displays** | | | | |
 | 2.8" ILI9341 SPI TFT, 14-pin (lcdwiki MSP2806/MSP2807) | `TFT_2.8in_ILI9341_SPI_MSP2806` | same | VRML + STEP | lcdwiki drawing (exact) |
+| 1.5" SH1107 128x128 OLED, I2C 4-pin (HiLetgo / GME128128-01-IIC) | `OLED_1.5in_SH1107_128x128_I2C` | same | VRML + STEP | calipers (PCB, holes, header, glass) |
 | 1.28" round GC9A01 IPS, 7-pin | `GC9A01_Round_1.28in_7pin` | same | VRML + STEP | header exact, outline from photos |
 | **Audio** | | | | |
 | Adafruit PCM5102 / PCM5100 I2S DAC (6250 / 6251) | `Adafruit_PCM510x_I2S_DAC` | same | VRML + STEP | Adafruit EagleCAD (exact) |
