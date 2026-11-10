@@ -798,6 +798,63 @@ for name, spec, descr in (('PSB-1_Header_2x20_Breakout', (True, False), '2x20 he
     hdr.append(fp_text('${REFERENCE}', (x0 + x1) / 2 - ox, PG.grid(0, r0 + 0.5)[1] - oy, 'F.Fab', 0.8, 0.12))
     write_fp(name, footprint(name, descr, 'protosupplies psb-1 header breakout', 'through_hole', hdr, -5.5, 8.0))
 
+# --- Waveshare RP2350B-Plus-W (Pico-2-W form factor, RP2350B with 15 extra GPIO pads on the back) -----------
+# Geometry: Waveshare dimension drawing (21 x 51 mm, pins 1.25 mm from the top edge, rows 17.78 mm apart, radio
+# module 16 mm wide), the vendor schematic (pin and pad assignments) and the board itself (calipers: 51.0 mm long,
+# the module hangs 5.7 mm past the bottom edge; back pads 1.5 mm square on a 2.54 mm grid centred on the board,
+# three rows level with pins 24/23/22 plus 0.5 mm).
+rpw_left = [('1', 'GP0', 'bidirectional'), ('2', 'GP1', 'bidirectional'), ('3', 'GND', 'power_in'),
+            ('4', 'GP2', 'bidirectional'), ('5', 'GP3', 'bidirectional'), ('6', 'GP4', 'bidirectional'), ('7', 'GP5', 'bidirectional'),
+            ('8', 'GND', 'power_in'), ('9', 'GP6', 'bidirectional'), ('10', 'GP7', 'bidirectional'), ('11', 'GP8', 'bidirectional'),
+            ('12', 'GP9', 'bidirectional'), ('13', 'GND', 'power_in'), ('14', 'GP10', 'bidirectional'), ('15', 'GP11', 'bidirectional'),
+            ('16', 'GP12', 'bidirectional'), ('17', 'GP13', 'bidirectional'), ('18', 'GND', 'power_in'), ('19', 'GP14', 'bidirectional'),
+            ('20', 'GP15', 'bidirectional'), None]
+RPW_BACK = ['GP24', 'GP25', 'GP26', 'GP27', 'GP28', 'GP29', 'GP30', 'GP31', 'GP32', 'GP33', 'GP34', 'GP35', 'GP43', 'GP44', 'GP45']
+rpw_left += [(str(41 + i), n, 'bidirectional') for i, n in enumerate(RPW_BACK)]
+rpw_right = [('40', 'VBUS', 'power_in'), ('39', 'VSYS', 'power_in'), ('38', 'GND', 'power_in'), ('37', '3V3_EN', 'input'),
+             ('36', '3V3(OUT)', 'power_out'), ('35', 'ADC_VREF', 'passive'), ('34', 'GP42/ADC2', 'bidirectional'), ('33', 'AGND', 'power_in'),
+             ('32', 'GP41/ADC1', 'bidirectional'), ('31', 'GP40/ADC0', 'bidirectional'), ('30', 'RUN', 'input'), ('29', 'GP22', 'bidirectional'),
+             ('28', 'GND', 'power_in'), ('27', 'GP21', 'bidirectional'), ('26', 'GP20', 'bidirectional'), ('25', 'GP19', 'bidirectional'),
+             ('24', 'GP18', 'bidirectional'), ('23', 'GND', 'power_in'), ('22', 'GP17', 'bidirectional'), ('21', 'GP16', 'bidirectional')]
+symbols.append(box_symbol(
+    'RP2350B-Plus-W', 'U', rpw_left, rpw_right,
+    f'{LIBNAME}:RP2350B-Plus-W', 'https://www.waveshare.com/wiki/RP2350B-Plus-W',
+    'Waveshare RP2350B-Plus-W: RP2350B (dual Cortex-M33 / Hazard3, 150 MHz, 520 KB SRAM), 16 MB flash, Raspberry Pi '
+    'Radio Module 2 (Wi-Fi 4 + BT 5.2 on GP36-39), USB-C, BOOT and RESET buttons, ME6217 3.3 V LDO. Pico 2 W pinout '
+    '(pins 1-40, ADC on GP40-42) plus 15 solder pads on the back for GP24-35 and GP43-45 (pins 41-55). LED on GP23, '
+    'VSYS sense GP46, PSRAM CS GP47 (PSRAM site unpopulated). 21 x 51 mm, module hangs 5.7 mm past the end.',
+    'rp2350b waveshare pico wifi', 'RP2350B-Plus-W*'))
+items = []
+for i in range(20):
+    y = -24.25 + 2.54 * i
+    items.append(pad_tht(i + 1, -8.89, y, 1.6, 1.0, 'rect' if i == 0 else 'circle'))
+    items.append(pad_tht(40 - i, 8.89, y, 1.6, 1.0, 'circle'))
+for i, n in enumerate(RPW_BACK):
+    col, row = i // 3, i % 3
+    items.append(pad_smd(41 + i, -5.08 + 2.54 * col, 16.9 + 2.54 * row, 1.5, 1.5, 'B.Cu'))
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-10.5, -25.5, 10.5, 25.5, layer, w))
+    items.append(fp_rect(-4.475, -26.8, 4.475, -19.5, layer, w))                     # USB-C, 1.3 mm proud of the top edge
+    items.append(fp_rect(-8.0, 14.0, 8.0, 31.2, layer, w))                            # Radio Module 2 incl. the antenna overhang
+items.append(fp_rect(-7.25, 14.0, 7.25, 25.5, 'F.Fab', 0.1))                            # module shield can
+items.append(fp_rect(-5.0, -6.5, 5.0, 3.5, 'F.Fab', 0.1))                               # RP2350B
+items.append(fp_text('RP2350B', 0, -1.5, 'F.Fab', 0.8, 0.12))
+for x, lbl in ((-3.2, 'BOOT'), (3.2, 'RESET')):
+    items.append(fp_rect(x - 1.5, -15.1, x + 1.5, -12.1, 'F.Fab', 0.1)); items.append(fp_text(lbl, x, -10.8, 'F.Fab', 0.6, 0.1))
+items.append(fp_text('1', -10.5, -26.3, 'F.SilkS', 0.8, 0.12)); items.append(fp_text('40', 10.5, -26.3, 'F.SilkS', 0.8, 0.12))
+items.append(fp_text('USB', 0, -27.6, 'F.Fab', 0.7, 0.1))
+items.append(fp_text('back: 41-55 = GP24-35, GP43-45', 0, 12.6, 'F.Fab', 0.55, 0.1))
+items.append(fp_rect(-10.75, -27.05, 10.75, 31.45, 'F.CrtYd', 0.05))
+items.append(fp_text('${REFERENCE}', 0, 6.5, 'F.Fab', 0.8, 0.12))
+items.append(model(MODEL + 'RP2350B-Plus-W.wrl'))                                      # built by tools/build_models.py
+write_fp('RP2350B-Plus-W', footprint(
+    'RP2350B-Plus-W',
+    'Waveshare RP2350B-Plus-W, through-hole pads for the 40 castellated pins (Pico 2 W pattern: 2.54 mm pitch, rows '
+    '17.78 mm apart, pin 1 top-left 1.25 mm below the top edge, USB-C at the top) plus 15 SMD pads on the back for '
+    'GP24-35 and GP43-45 (pins 41-55, 1.5 mm square on a 2.54 mm grid centred on the board, rows about 0.5 mm below '
+    'pins 24/23/22: read from photos, +/-0.3 mm). Board 21 x 51 mm; the radio module hangs 5.7 mm past the bottom edge.',
+    'rp2350b waveshare pico wifi', 'through_hole', items, -29, 33))
+
 # --- Optocouplers with logic output (stock DIP footprints and 3D models) -----
 def opto_symbol(name, ref, anode, cathode, vcc, vo, gnd, ncs, footprint, datasheet, desc, keywords, fp_filters):
     """Opto-isolator with an LED input (left), a dashed isolation barrier and an inverting open-collector output

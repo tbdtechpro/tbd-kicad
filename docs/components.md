@@ -12,6 +12,7 @@ dimension and what is still unverified. Regenerate the library with `python3 too
 | KY-040 encoder module | `KY-040_Rotary_Encoder_Module` | `KY-040_Module_RA_Header` | header exact, module size approximate |
 | RP2040-Zero form factor | `RP2040-Zero` | `RP2040-Zero` | edge pins exact (Waveshare drawing), back pads approximate |
 | ESP32-S3-DevKitC-1 | `ESP32-S3-DevKitC-1` | `ESP32-S3-DevKitC-1` | exact (Espressif library, CC-BY-SA 4.0) |
+| Waveshare RP2350B-Plus-W | `RP2350B-Plus-W` | `RP2350B-Plus-W` + VRML/STEP | pins exact (Waveshare drawing), back pads from photos |
 | TK103 PCM5102A I2S DAC | `TK103_PCM5102A_I2S_DAC` | `TK103_Module_RA_Header` + STEP | exact (vendor STEP) |
 | MIDI shield (K194725ASJH) | `MIDI_Shield_DIN5x3_6N138` | stock `Module:Arduino_UNO_R3_WithMountingHoles` | exact (UNO header pattern) |
 | ElectroCookie full breadboard | none (mechanical) | `ElectroCookie_Breadboard_Full` | outline/holes exact, rail length approximate |
@@ -88,6 +89,25 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
   edge; bottom row ends 3.92 mm from the right edge. Pins 1-9 left (5V, GND, 3V3, GP29, 28, 27, 26, 15, 14),
   10-14 bottom (GP13..GP9), 15-23 right bottom-up (GP8..GP0).
 - Back solder pads 24-33 (GND, GP25..GP17) are placed from a photo at 2.0 mm pitch: approximate.
+
+## Waveshare RP2350B-Plus-W
+
+- RP2350B (dual Cortex-M33 / Hazard3 at 150 MHz, 520 KB SRAM), 16 MB W25Q128 flash, Raspberry Pi Radio Module 2
+  (Wi-Fi 4, BT 5.2) on GP36 WL_ON, GP37 WL_D, GP38 WL_CS, GP39 WL_CLK, USB-C, BOOT and RESET buttons, ME6217 3.3 V
+  LDO (CE on 3V3_EN, pulled to VSYS), MBR230 Schottky from VBUS to VSYS, VSYS sense on GP46 via a FET divider,
+  VBUS detect through the radio module's GPIO2. LED2 (red) on GP23, LED1 (red) on the radio module's WL_GPIO0.
+  PSRAM footprint on the back is unpopulated, CS on GP47. 41 GPIO on pads: GP0-22 and GP40-42 (ADC0-2) on the
+  40-pin Pico 2 W edge pattern, GP24-35 and GP43-45 on 15 back pads. No SWD pads. All from the Waveshare schematic.
+- Pin 1-40 names follow the Pico 2 W except pins 31/32/34 = GP40/GP41/GP42 (RP2350B puts the ADC on GP40-47).
+  Back pads are pins 41-55 in GPIO order (41 = GP24 ... 52 = GP35, 53-55 = GP43-45).
+- Geometry: 21.00 x 51.00 mm board (Waveshare drawing; calipers 51.0), pins at 2.54 mm pitch in rows 17.78 mm apart,
+  first pin 1.25 mm from the top edge; USB-C 8.95 mm wide, 1.3 mm proud; radio module 16.0 mm wide with the antenna
+  end 4.92 mm past the bottom edge on the drawing, 5.7 mm by calipers (the footprint uses 5.7). Back pads 1.5 mm
+  square on a 2.54 mm grid centred on the board, three rows about 0.5 mm below pins 24/23/22, read from photos
+  (private overlay `reference/photos/rp2350b-plus-w/`): +/-0.3 mm. Front-frame column order, left to right:
+  GP24-26, GP27-29, GP30-32, GP33-35, GP43-45 (top to bottom within a column).
+- 3D body from `tools/build_models.py`: board, castellations, headers, USB-C, buttons, LDO, RP2350B, crystal, the
+  radio module with its antenna overhang, flash and PSRAM site and the labelled pads on the back.
 
 ## ESP32-S3-DevKitC-1 "Gold Edition" N16R8
 

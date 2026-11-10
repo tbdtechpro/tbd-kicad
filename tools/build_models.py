@@ -558,13 +558,68 @@ def midi_shield():
     return g
 
 
+
+def rp2350b_plus_w():
+    """Waveshare RP2350B-Plus-W in the footprint frame (board centre origin, USB at -Y): Pico-sized green board on
+    headers, castellated pins, radio module hanging past the +Y end."""
+    g = []
+    z = 2.54; t = 1.6; top = z + t
+    pins = [(sx * 8.89, -24.25 + 2.54 * i) for sx in (-1, 1) for i in range(20)]
+    slab = pcb_slab(21.0, 51.0, z, t)
+    pcb = drill(pcb_slab(21.0, 51.0, z, t, radius=1.0), pins, 0.5)
+    pcb = castellations(g, pcb, slab, [(sx * 10.5, y) for sx, y in ((-1, p[1]) if p[0] < 0 else (1, p[1]) for p in pins)], z, t, 0.8)
+    g.append((pcb, GREEN))
+    header_pins(g, pins, z)
+    pads(g, pins, z, t, 0.8, 0.5, square=(0,))
+    names_l = ['GP0', 'GP1', 'GND', 'GP2', 'GP3', 'GP4', 'GP5', 'GND', 'GP6', 'GP7', 'GP8', 'GP9', 'GND', 'GP10', 'GP11', 'GP12', 'GP13', 'GND', 'GP14', 'GP15']
+    names_r = ['VBUS', 'VSYS', 'GND', 'EN', '3V3', 'VREF', '42', 'G', '41', '40', 'RUN', '22', 'G', '21', '20', '19', '18', 'G', '17', '16']
+    for i in range(20):                                                                 # pin labels on the back, as on the board
+        silk(g, names_l[i].replace('GP', ''), 6.9, -(-24.25 + 2.54 * i), z - 0.04, 0.55, 0, WHITE)
+        silk(g, names_r[i], -6.6, -(-24.25 + 2.54 * i), z - 0.04, 0.5, 0, WHITE)
+    usb_c(g, 0, -19.5, -26.8, top)
+    for x, lbl in ((-7.6, 'LED1'), (7.6, 'LED2')):
+        led_0603(g, x, 23.3, top, (0.9, 0.15, 0.15)); silk(g, lbl, x, 21.8, top, 0.5)
+    for x, lbl in ((-3.2, 'BOOT'), (3.2, 'RESET')):
+        tact(g, x, 13.6, top, 3.0, 1.4, WHITE); silk(g, lbl, x, 10.9, top, 0.55)
+    sot23(g, 0, 13.6, top, 90, 5)                                                       # ME6217 LDO
+    chip(g, 0, 1.5, top, 10.0, 10.0, 0.9)                                               # RP2350B QFN-80
+    silk(g, 'RP2350B', 0, 1.5, top + 0.9, 0.7, 0, GREY)
+    crystal(g, 0, -8.5, top, 3.2, 2.5)
+    silk(g, 'RP2350B-Plus-W', 0, -11.9, top, 0.9)
+    for x, y in ((-6.5, 17.0), (6.5, 17.0), (-6.0, 5.0), (6.0, 5.0), (-6.5, -3.0), (6.5, -3.0), (-4.0, 9.0), (4.0, 9.0)):
+        passive(g, x, y, top, 1.6, 0.8, 0.5, DARK, 90)
+    g.append((box(-8.0, 8.0, -31.2, -14.0, top, top + 0.8), (0.06, 0.25, 0.12)))        # radio module PCB incl. antenna area
+    can = box(-7.25, 7.25, -25.5, -14.0, top + 0.8, top + 2.2)
+    g.append((can, SILVER))
+    silk(g, 'RPi RM2', 0, -19.75, top + 2.2, 0.8, 0, GREY)
+    for i in range(6):                                                                  # antenna meander on the overhang
+        x = -5.0 + i * 2.0
+        g.append((box(x, x + 0.5, -30.5, -26.5, top + 0.8, top + 0.85), GOLD))
+        if i < 5:
+            y0, y1 = (-27.0, -26.5) if i % 2 == 0 else (-30.5, -30.0)
+            g.append((box(x, x + 2.5, y0, y1, top + 0.8, top + 0.85), GOLD))
+    leaded(g, 0, 12.8, z - 1.0, 3.9, 4.9, 1.0, 4, 1.27, 0)                               # W25Q128 flash on the back
+    for i in range(4):                                                                  # empty PSRAM SOIC-8 site on the back
+        for sx in (-1, 1):
+            g.append((box(sx * 2.4 - 0.5 if sx < 0 else sx * 2.4 - 1.3, sx * 2.4 + 1.3 if sx < 0 else sx * 2.4 + 0.5, 8.4 - 1.9 + 1.27 * i - 0.3, 8.4 - 1.9 + 1.27 * i + 0.3, z - 0.03, z), GOLD))
+    for i in range(15):                                                                 # back GPIO pads
+        col, row = i // 3, i % 3
+        x, y = -5.08 + 2.54 * col, -(16.9 + 2.54 * row)
+        g.append((box(x - 0.75, x + 0.75, y - 0.75, y + 0.75, z - 0.03, z), GOLD))
+    labels = ['24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '43', '44', '45']
+    for i, lbl in enumerate(labels):
+        col, row = i // 3, i % 3
+        silk(g, lbl, -5.08 + 2.54 * col, -(16.9 + 2.54 * row) - 1.2, z - 0.04, 0.5, 0, WHITE)
+    silk(g, 'Waveshare', 0, -4.5, z - 0.04, 0.9, 0, WHITE)
+    return g
+
 for name, builder, step in (('KY-040_Module', ky040, True), ('GC9A01_Round_1.28in_7pin', gc9a01, True),
                             ('Teensy_4.1_Assembly', teensy, False),
                             ('Adafruit_PCM510x_I2S_DAC', adafruit_pcm510x, True), ('Adafruit_TXB0104_Breakout', adafruit_txb0104, True),
                             ('Adafruit_BSS138_Level_Shifter', adafruit_bss138, True), ('STX-3120-3B', stx3120, True),
                             ('Beetle_RP2350_DFR1188', beetle_rp2350, True), ('RP2040-Zero', rp2040_zero, True),
                             ('TFT_2.8in_ILI9341_SPI_MSP2806', tft_28, True), ('ESP32-S3-DevKitC-1', esp32_s3_devkitc, True),
-                            ('MIDI_Shield_UNO', midi_shield, True)):
+                            ('MIDI_Shield_UNO', midi_shield, True), ('RP2350B-Plus-W', rp2350b_plus_w, True)):
     g = builder()
     write_vrml(os.path.join(OUT, name + '.wrl'), g)
     if step:

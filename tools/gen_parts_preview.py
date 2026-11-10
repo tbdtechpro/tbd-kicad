@@ -39,11 +39,11 @@ def pad_at(fp, num, x, y):
     fp.Move(pcbnew.VECTOR2I(mm(x) - p.x, mm(y) - p.y))
 
 
-# board outline 270 x 150
+# board outline 280 x 150
 rect = pcbnew.PCB_SHAPE(board)
 rect.SetShape(pcbnew.SHAPE_T_RECT)
 rect.SetStart(pcbnew.VECTOR2I(mm(0), mm(0)))
-rect.SetEnd(pcbnew.VECTOR2I(mm(270), mm(150)))
+rect.SetEnd(pcbnew.VECTOR2I(mm(280), mm(150)))
 rect.SetLayer(pcbnew.Edge_Cuts)
 rect.SetWidth(mm(0.1))
 board.Add(rect)
@@ -63,11 +63,12 @@ for name, ref, num, c, r, rot in (('RP2040-Zero', 'U2', 1, 13, 7, 0),
 
 # larger boards beside it
 esp = add(LIB, 'ESP32-S3-DevKitC-1', 'A1', 90); centre_at(esp, 165, 24)
-tft = add(LIB, 'TFT_2.8in_ILI9341_SPI_MSP2806', 'DS1'); centre_at(tft, 232, 82)
+tft = add(LIB, 'TFT_2.8in_ILI9341_SPI_MSP2806', 'DS1'); centre_at(tft, 222, 82)
+rpw = add(LIB, 'RP2350B-Plus-W', 'U6'); centre_at(rpw, 263, 48)
 uno = add(STOCK, 'Arduino_UNO_R3_WithMountingHoles', 'A2', 0, 'Module', MODEL + 'MIDI_Shield_UNO.wrl'); centre_at(uno, 158, 100)
 uno.SetValue('MIDI_Shield_DIN5x3_6N138')
-logo = add(LIB, 'Logo_TBD_Full_40mm', 'G1'); centre_at(logo, 232, 18)
-star = add(LIB, 'Logo_Star_10mm', 'G2'); centre_at(star, 258, 140)
+logo = add(LIB, 'Logo_TBD_Full_40mm', 'G1'); centre_at(logo, 222, 18)
+star = add(LIB, 'Logo_Star_10mm', 'G2'); centre_at(star, 268, 140)
 board.Save(PCB)
 
 # project file and library tables (same layout as teensy-panel)

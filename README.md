@@ -19,6 +19,7 @@ it under CC-BY-SA 4.0 with the KiCad library exception: designs made with it are
 | Espressif ESP32-S3-DevKitC-1 (and N16R8 clones) | `ESP32-S3-DevKitC-1` | `ESP32-S3-DevKitC-1` | VRML + STEP | Espressif library (exact) |
 | DFRobot Beetle RP2350 (DFR1188) | `Beetle_RP2350_DFR1188` | `Beetle_RP2350_DFR1188_THT`, `_SMD` | VRML + STEP (THT) | DFRobot CAD (exact) |
 | Waveshare RP2040-Zero form factor | `RP2040-Zero` | `RP2040-Zero` | VRML + STEP | Waveshare drawing (edge pins exact, back pads approx.) |
+| Waveshare RP2350B-Plus-W (Pico 2 W form factor, RP2350B) | `RP2350B-Plus-W` | `RP2350B-Plus-W` | VRML + STEP | Waveshare drawing + board (pins exact, back pads +/-0.3 mm) |
 | **Displays** | | | | |
 | 2.8" ILI9341 SPI TFT, 14-pin (lcdwiki MSP2806/MSP2807) | `TFT_2.8in_ILI9341_SPI_MSP2806` | same | VRML + STEP | lcdwiki drawing (exact) |
 | 1.28" round GC9A01 IPS, 7-pin | `GC9A01_Round_1.28in_7pin` | same | VRML + STEP | header exact, outline from photos |
