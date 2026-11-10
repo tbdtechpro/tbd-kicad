@@ -1,8 +1,8 @@
 # tbd-kicad
 
 KiCad 9 symbols, footprints and 3D models for hobby-electronics modules that are awkward to find ready-made:
-development boards, display modules, audio DACs, level-shifter breakouts, an encoder module, solderable breadboard
-and proto boards, a 3.5 mm jack and a MIDI shield. Each part is complete: a symbol with sensible pin types, a footprint
+development boards, display modules, audio DACs, level-shifter breakouts, an encoder module, optocouplers, solderable
+breadboard and proto boards, a 3.5 mm jack and a MIDI shield. Each part is complete: a symbol with sensible pin types, a footprint
 with the real hole pattern, a 3D body for the viewer, and a note on where every dimension came from.
 
 Everything here is generated from Python scripts, so a measurement fix rebuilds the whole library consistently. Use
@@ -31,6 +31,9 @@ it under CC-BY-SA 4.0 with the KiCad library exception: designs made with it are
 | Adafruit TXB0104 bi-directional level shifter (1875) | `Adafruit_TXB0104_Level_Shifter` | `Adafruit_TXB0104_Breakout` | VRML + STEP | Adafruit EagleCAD (exact) |
 | Adafruit BSS138 4-channel I2C-safe level shifter (757) | `Adafruit_BSS138_4ch_Level_Shifter` | `Adafruit_BSS138_Level_Shifter` | VRML + STEP | Adafruit EagleCAD (exact) |
 | KY-040 rotary encoder module (right-angle header) | `KY-040_Rotary_Encoder_Module` | `KY-040_Module_RA_Header` | VRML + STEP | header exact, board from photos |
+| **Optocouplers** | | | | |
+| Sharp PC900V OPIC photocoupler (MIDI in) | `PC900V` | stock `Package_DIP:DIP-6_W7.62mm` | stock | Sharp drawing (exact) |
+| Toshiba TLP2962 15 MBd photocoupler | `TLP2962` | stock `Package_DIP:DIP-8_W7.62mm` | stock | Toshiba drawing (exact) |
 | **Prototyping boards** | | | | |
 | ElectroCookie full-size solderable breadboard PCB | (mechanical) | `ElectroCookie_Breadboard_Full` | | vendor drawing (exact), rails from photos |
 | ProtoSupplies PSB-1 MCU proto board with DC input | (mechanical) | `ProtoSupplies_PSB-1` | | vendor drawing + CAD renders |

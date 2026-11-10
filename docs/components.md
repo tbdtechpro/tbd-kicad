@@ -19,6 +19,8 @@ dimension and what is still unverified. Regenerate the library with `python3 too
 | Adafruit TXB0104 breakout | `Adafruit_TXB0104_Level_Shifter` | `Adafruit_TXB0104_Breakout` + VRML/STEP | exact (Adafruit EagleCAD board) |
 | Adafruit BSS138 4-ch level shifter | `Adafruit_BSS138_4ch_Level_Shifter` | `Adafruit_BSS138_Level_Shifter` + VRML/STEP | exact (Adafruit EagleCAD board) |
 | Kycon STX-3120-3B 3.5 mm jack | `AudioJack_3.5mm_STX-3120-3B` | `Jack_3.5mm_Kycon_STX-3120-3B_Horizontal` + VRML/STEP | exact (Kycon drawing) |
+| Sharp PC900V photocoupler | `PC900V` | stock `Package_DIP:DIP-6_W7.62mm` | exact (Sharp drawing) |
+| Toshiba TLP2962 photocoupler | `TLP2962` | stock `Package_DIP:DIP-8_W7.62mm` | exact (Toshiba drawing) |
 | ProtoSupplies PSB-1 proto board | none (mechanical) | `ProtoSupplies_PSB-1` | outline/holes/grid exact, input-section parts +/-0.15 mm, V-rail continuity unverified |
 
 Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: CC-BY-SA 4.0; Adafruit EagleCAD boards: CC-BY-SA 3.0); 3D models in `lib/3d/`. Vendor documents and models without redistribution terms (DFRobot CAD/PDFs, lcdwiki drawing, Waveshare images, Lonely Binary guide and STEP) stay in the private overlay repo and are only linked here. Footprints reference models as
@@ -179,4 +181,24 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
   own feed pad, while the vendor schematic draws a single V net; measure the board and set `PSB_V_COMMON = True` in
   `tools/gen_lib.py` if they are joined. Copper lines in the footprint only illustrate the buses; a design still
   needs board-level tracks for connectivity (same as the ElectroCookie footprint).
+
+## Sharp PC900V (PC900V0NSZXF) OPIC photocoupler
+
+- IRED coupled to an OPIC detector with a built-in regulator and amplifier: digital open-collector output, "normal
+  OFF" (output high with no LED current, low above the threshold IFHL of about 1.1 mA typ., 2 mA max), TTL/LSTTL
+  compatible, VCC 3-15 V, IOL up to 16 mA at 0.4 V, tPHL/tPLH 2-6 us. 5 kVrms isolation. Sharp recommends 10 nF or
+  more between VCC and GND close to the device and warns against taking any pin below GND.
+- 6-pin DIP: body 7.12 x 6.5 mm, 7.62 mm row spacing, 2.54 mm pitch, 0.5 x 0.6 mm leads 2.9 mm long; pins 1 anode,
+  2 cathode, 3 NC, 4 VO, 5 GND, 6 VCC (Sharp sheet D2-A05302EN, outline 1). Stock `Package_DIP:DIP-6_W7.62mm`
+  matches; the SMT gull-wing variants (PC900V0NIPXF) use `Package_DIP:SMDIP-6_W9.53mm` instead.
+- The symbol draws the LED, the isolation barrier and the inverting output; the NC pin sits on the bottom edge as
+  type no-connect.
+
+## Toshiba TLP2962 photocoupler
+
+- IRED coupled to a high-speed photo-IC: inverting open-collector output (LED on = output low), 15 MBd typ., input
+  threshold 5 mA max, VCC 2.7-5.5 V, 4 mA supply, internal Faraday shield (20 kV/us common-mode immunity), 5 kVrms
+  isolation, -40 to 125 C. Toshiba asks for a 0.1 uF ceramic between pins 8 and 5 within 1 cm of the pins.
+- 8-pin DIP 11-10C4S: body 9.66 x 6.4 mm, 7.62 mm row, 2.54 mm pitch, 0.5 x 0.25 mm leads; pins 2 anode, 3 cathode,
+  5 GND, 6 VO, 8 VCC, 1/4/7 NC (Toshiba sheet rev 4.0, 2016-12-14). Stock `Package_DIP:DIP-8_W7.62mm` matches.
 

@@ -797,6 +797,58 @@ write_fp('ProtoSupplies_PSB-1', footprint(
     'Geometry from the vendor dimension drawing and CAD renders; DC input part positions +/-0.15 mm.',
     'protosupplies psb-1 protoboard proto board', 'through_hole', items, -53, 53))
 
+# --- Optocouplers with logic output (stock DIP footprints and 3D models) -----
+def opto_symbol(name, ref, anode, cathode, vcc, vo, gnd, ncs, footprint, datasheet, desc, keywords, fp_filters):
+    """Opto-isolator with an LED input (left), a dashed isolation barrier and an inverting open-collector output
+    (right). ncs = list of no-connect pin numbers, kept as hidden unconnected pins along the bottom edge."""
+    W, H = 12.7, 15.24
+    g = []
+    def poly(pts, width=0.254, dash=False, fill='none'):
+        g.append('(polyline (pts ' + ' '.join(f'(xy {f(x)} {f(y)})' for x, y in pts) +
+                 f') (stroke (width {width}) (type {"dash" if dash else "default"})) (fill (type {fill})))')
+    g.append(f'(rectangle (start {f(-W/2)} {f(H/2)}) (end {f(W/2)} {f(-H/2)}) (stroke (width 0.254) (type default)) (fill (type background)))')
+    poly([(-6.35, 2.54), (-3.81, 2.54), (-3.81, 1.27)])                         # anode lead
+    poly([(-4.83, 1.27), (-2.79, 1.27), (-3.81, -0.76), (-4.83, 1.27)], fill='outline')   # LED triangle
+    poly([(-4.83, -0.76), (-2.79, -0.76)])                                       # cathode bar
+    poly([(-3.81, -0.76), (-3.81, -2.54), (-6.35, -2.54)])                      # cathode lead
+    for dy in (0.9, 0.0):                                                        # light arrows toward the detector
+        poly([(-2.3, dy - 0.3), (-0.9, dy - 0.3)], 0.152)
+        poly([(-1.4, dy + 0.1), (-0.9, dy - 0.3), (-1.4, dy - 0.7)], 0.152)
+    poly([(0, 6.35), (0, -6.35)], 0.152, dash=True)                              # isolation barrier
+    poly([(1.27, 1.78), (1.27, -1.78), (4.06, 0), (1.27, 1.78)], fill='outline')  # amplifier / inverter
+    g.append('(circle (center 4.5 0) (radius 0.44) (stroke (width 0.152) (type default)) (fill (type none)))')
+    poly([(4.94, 0), (6.35, 0)])                                                 # VO lead
+    pins = [pin(anode, 'A', 'passive', -(W / 2 + 2.54), 2.54, 0), pin(cathode, 'K', 'passive', -(W / 2 + 2.54), -2.54, 0),
+            pin(vcc, 'VCC', 'power_in', W / 2 + 2.54, 5.08, 180), pin(vo, 'VO', 'open_collector', W / 2 + 2.54, 0, 180),
+            pin(gnd, 'GND', 'power_in', W / 2 + 2.54, -5.08, 180)]
+    for i, n in enumerate(ncs):
+        pins.append(pin(n, 'NC', 'no_connect', -2.54 * (len(ncs) - 1) / 2 + 2.54 * i, -(H / 2 + 2.54), 90)
+                    .replace('(length 2.54)', '(length 2.54) (hide yes)', 1))        # hidden, like stock NC pins
+    props = [prop('Reference', ref, -W / 2, H / 2 + 1.27, justify='left'), prop('Value', name, -W / 2, -H / 2 - 3.81, justify='left'),
+             prop('Footprint', footprint, 0, -H / 2 - 6.35, hide=True), prop('Datasheet', datasheet, 0, -H / 2 - 8.89, hide=True),
+             prop('Description', desc, 0, -H / 2 - 11.43, hide=True), prop('ki_keywords', keywords, 0, 0, hide=True),
+             prop('ki_fp_filters', fp_filters, 0, 0, hide=True)]
+    return ('(symbol "%s" (pin_names (offset 1.016)) (exclude_from_sim no) (in_bom yes) (on_board yes)\n\t%s\n'
+            '\t(symbol "%s_0_1"\n\t\t%s\n\t)\n\t(symbol "%s_1_1"\n\t\t%s\n\t)\n\t(embedded_fonts no)\n)'
+            % (name, '\n\t'.join(props), name, '\n\t\t'.join(g), name, '\n\t\t'.join(pins)))
+
+# Sharp PC900V (PC900V0NSZXF): 6-pin DIP, 7.12 x 6.5 mm body, 7.62 mm row, 2.54 mm pitch (Sharp sheet D2-A05302EN).
+symbols.append(opto_symbol(
+    'PC900V', 'U', '1', '2', '6', '4', '5', ['3'],
+    'Package_DIP:DIP-6_W7.62mm', 'https://global.sharp/products/device/lineup/data/pdf/datasheet/pc900v0nszxf_e.pdf',
+    'Sharp PC900V OPIC photocoupler, 6-pin DIP: IRED input, digital open-collector output (normal OFF, output goes '
+    'low with LED current), TTL/LSTTL compatible, VCC 3-15 V, 5 kV isolation; the classic MIDI-in optocoupler. '
+    'Pins 1 A, 2 K, 3 NC, 4 VO, 5 GND, 6 VCC.', 'optocoupler photocoupler opic midi sharp', 'DIP*W7.62mm*'))
+
+# Toshiba TLP2962: 8-pin DIP (11-10C4S), 9.66 x 6.4 mm body, 7.62 mm row (Toshiba sheet 2016-12-14 rev 4.0).
+symbols.append(opto_symbol(
+    'TLP2962', 'U', '2', '3', '8', '6', '5', ['1', '4', '7'],
+    'Package_DIP:DIP-8_W7.62mm', 'https://toshiba.semicon-storage.com/info/TLP2962_datasheet_en_20161214.pdf',
+    'Toshiba TLP2962 high-speed photocoupler, 8-pin DIP: IRED input, inverting open-collector photo-IC output '
+    '(LED on = output low), 15 MBd, VCC 2.7-5.5 V, 5 mA threshold, internal Faraday shield (20 kV/us CMTI), '
+    '5 kVrms isolation. Pins 2 A, 3 K, 5 GND, 6 VO, 8 VCC; 1, 4, 7 NC.',
+    'optocoupler photocoupler high speed toshiba', 'DIP*W7.62mm*'))
+
 # ---------------------------------------------------------------- write sym
 os.makedirs(LIB, exist_ok=True)
 with open(os.path.join(LIB, LIBNAME + '.kicad_sym'), 'w') as fh:
