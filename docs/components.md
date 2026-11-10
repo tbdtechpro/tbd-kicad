@@ -183,8 +183,8 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
   half; 2.2 mm holes at the top corners; 5050 LED in the middle.
 - MicroSD (20 x 18): 1x6 header 3V3/CS/MOSI/CLK/MISO/GND on the left edge (top to bottom), 2.2 mm holes beside it,
   push-in slot opening to the right; an inserted card adds 7 mm. 3.3 V only, 10 k pull-ups on the data lines.
-- USB-C (12.7 x 21.6): 1x6 header VBUS/GND/CC1/D-/D+/CC2 along the top edge, receptacle opening on the left edge,
-  5.1 k pull-downs on CC1/CC2, 3.2 mm holes in the lower corners.
+- USB-C (12.7 x 21.6): 1x6 header VBUS/GND/CC1/D-/D+/CC2 along the top edge, receptacle under the first three pins
+  opening on the bottom edge, 5.1 k pull-downs on CC1/CC2, 3.2 mm holes at the top-left (H1) and bottom-right (H2).
 - Pushbutton: 6 x 6 x 5 mm body, two 6 mm leads on 5.08 mm centres drawn on the centre line (the body may sit offset
   on the real part); use the stock `Switch:SW_Push` symbol.
 - The 8 MB PSRAM for the Teensy 4.1 (APS6404L-3SQR-SN / ESP-PSRAM64H) needs no library part: KiCad ships the

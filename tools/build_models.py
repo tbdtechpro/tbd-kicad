@@ -564,11 +564,11 @@ def microsd_module():
 def usbc_breakout():
     z = 2.54; t = 1.6; top = z + t
     pins = [(-5.35 + 2.54 * i, -5.08) for i in range(6)]
-    g = small_module(21.6, 12.7, RED, pins, [(-8.3, 3.5), (8.3, 3.5)], 1.6)
+    g = small_module(21.6, 12.7, RED, pins, [(-8.8, -2.3), (8.3, 3.5)], 1.6)
     pin_labels(g, ('VBUS', 'GND', 'CC1', 'D-', 'D+', 'CC2'), pins, top, 0.4, 90, (0, 2.2))
-    shell = box(-10.8, -3.5, -5.9, 3.0, top, top + 3.2).cut(box(-11.0, -4.5, -5.1, 2.2, top + 0.5, top + 2.7))   # receptacle opening at -X
+    shell = box(-8.45, 0.45, -6.35, 0.95, top, top + 3.2).cut(box(-7.65, -0.35, -6.6, 0.2, top + 0.5, top + 2.7))   # receptacle opening at fp +Y (3D -Y)
     g.append((shell, SILVER))
-    passive(g, 2.0, 1.5, top, 1.6, 0.8, 0.5, DARK, 0); passive(g, 5.0, 1.5, top, 1.6, 0.8, 0.5, DARK, 0)          # 5.1 k CC pull-downs
+    passive(g, 5.5, -2.0, top, 1.6, 0.8, 0.5, DARK, 90); passive(g, -8.0, 4.2, top, 1.6, 0.8, 0.5, DARK, 0)     # 5.1 k CC pull-downs (R1 bottom right, R4 top left)
     return g
 
 
@@ -678,34 +678,41 @@ def rp2350b_plus_w():
 
 def din5_socket():
     """PCB-mount DIN-5 180-degree socket in the footprint frame (pin 2 at the origin, opening toward footprint -Y
-    = 3D +Y), after the sockets on the MIDI shield: square front flange with chamfered corners around a round
-    recessed opening, five contacts on a 7 mm circle with the key slot at the bottom, a metal contact ring, a narrower
-    body behind the flange with a top rib, and the pins and shell lugs bent down at the rear."""
+    = 3D +Y), after the sockets on the MIDI shield: a thin square front plate, a round barrel behind it with two
+    windows, the contact ring and five contacts on a 7 mm circle with the key slot at the bottom, a square contact
+    block at the rear, and the five pin legs fanning out of it down to the board with the three shell lugs."""
     import midi_geometry as MG
     g = []
     w, d, h = MG.DIN['body_w'], MG.DIN['body_d'], MG.DIN['body_h']
     face = -MG.DIN['face_from_pin2']                      # 3D y of the face
-    cz = h / 2                                            # opening centre height
-    fl = 3.0                                              # flange depth
-    flange = box(-w / 2, w / 2, face - fl, face, 0.3, h)
-    edges = [e for e in flange.Edges if abs(e.Length - (h - 0.3)) < 1e-6]
-    flange = flange.makeChamfer(1.2, edges)
-    body = box(-w / 2 + 1.5, w / 2 - 1.5, face - d, face - fl + 0.1, 0.3, h - 0.6)
-    rib = box(-1.6, 1.6, face - d + 1.0, face - fl, h - 0.6, h)
-    shell = flange.fuse(body).fuse(rib)
-    shell = shell.cut(cyl(6.2, 9.0, (0, face - 8.0, cz), (0, 1, 0)).fuse(cyl(6.9, 0.8, (0, face - 0.7, cz), (0, 1, 0))))   # opening + bevel
-    shell = shell.cut(box(-1.3, 1.3, face - 8.0, face + 0.1, cz - 7.6, cz - 5.0))                 # key slot at the bottom
+    cz = h / 2                                            # barrel axis height
+    pl = 1.6                                              # front plate thickness
+    plate = box(-w / 2, w / 2, face - pl, face, 0.3, h)
+    plate = plate.makeChamfer(0.5, [e for e in plate.Edges if abs(e.Length - (h - 0.3)) < 1e-6])
+    barrel = cyl(7.0, d - pl - 2.0, (0, face - pl + 0.05, cz), (0, -1, 0))
+    block = box(-6.5, 6.5, face - d, face - d + 2.6, cz - 6.5, cz + 6.5)
+    shell = plate.fuse(barrel).fuse(block)
+    for sx in (-1, 1):                                                                              # windows in the barrel
+        shell = shell.cut(box(sx * 2.0 - 1.6, sx * 2.0 + 1.6, face - pl - 6.5, face - pl - 2.0, cz + 5.0, cz + 8.0))
+        shell = shell.cut(box(sx * 8.0 - 2.5, sx * 8.0 + 2.5, face - pl - 6.5, face - pl - 2.0, cz - 1.5, cz + 1.5))
+    shell = shell.cut(cyl(6.0, 9.0, (0, face - 8.0, cz), (0, 1, 0)).fuse(cyl(6.6, 0.7, (0, face - 0.6, cz), (0, 1, 0))))   # opening + bevel
+    shell = shell.cut(box(-1.3, 1.3, face - 8.0, face + 0.1, cz - 7.5, cz - 4.8))                 # key slot at the bottom
     g.append((shell, BLACK))
-    g.append((moved(rotx(ring(0, 0, 0, 5.0, 5.9, 5.4), -90), 0, face - 6.0, cz), GREY))           # contact ring
-    g.append((cyl(5.4, 0.8, (0, face - 8.0, cz), (0, 1, 0)), DARK))                                 # insulator at the back of the opening
-    for a in (0, 45, 90, 135, 180):
-        px, pz = 3.5 * math.cos(math.radians(a)), 3.5 * math.sin(math.radians(a))
-        g.append((cyl(0.55, 6.5, (px, face - 7.5, cz + pz), (0, 1, 0)), SILVER))                   # contacts
+    g.append((moved(rotx(ring(0, 0, 0, 5.0, 5.8, 5.3), -90), 0, face - 6.0, cz), GREY))           # contact ring
+    g.append((cyl(5.3, 0.8, (0, face - 8.0, cz), (0, 1, 0)), DARK))                                 # insulator at the back of the opening
+    contact = {'1': 180, '4': 135, '2': 90, '5': 45, '3': 0}
     for num, (x, y) in MG.DIN['pins'].items():
-        g.append((box(x - 0.4, x + 0.4, -y - 0.3, -y + 0.3, -3.0, 0.3), SILVER))
-        g.append((box(x - 0.4, x + 0.4, -y - 0.3, -y + 2.0, 0.3, 2.0), SILVER))                     # bent lead running into the body
+        a = math.radians(contact[num]); px, pz = 3.5 * math.cos(a), cz + 3.5 * math.sin(a)
+        g.append((cyl(0.55, 6.5, (px, face - 7.5, pz), (0, 1, 0)), SILVER))                        # contact inside the opening
+        yb = face - d + 1.3                                                                          # through the rear block
+        g.append((box(px - 0.3, px + 0.3, yb - 0.3, yb + 0.3, -3.0 if abs(x - px) < 0.5 else pz, pz + 0.3), SILVER))
+        if abs(x - px) >= 0.5:                                                                       # fanned leg: out, then down
+            g.append((box(min(x, px) - 0.3, max(x, px) + 0.3, yb - 0.3, yb + 0.3, pz - 0.3, pz + 0.3), SILVER))
+            g.append((box(x - 0.3, x + 0.3, -y - 0.3, -y + 0.3, -3.0, pz + 0.3), SILVER))
+        else:
+            g.append((box(x - 0.3, x + 0.3, -y - 0.3, -y + 0.3, -3.0, pz), SILVER))
     for x, y in MG.DIN['lugs']:
-        g.append((box(x - 0.5, x + 0.5, -y - 1.2, -y + 1.2, -3.0, 0.3), SILVER))
+        g.append((box(x - 0.5, x + 0.5, -y - 0.6, -y + 0.6, -3.0, 1.2), SILVER))
     return g
 
 

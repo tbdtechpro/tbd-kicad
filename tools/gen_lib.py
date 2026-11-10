@@ -1053,16 +1053,17 @@ usbc_names = ('VBUS', 'GND', 'CC1', 'D-', 'D+', 'CC2')
 for i, name in enumerate(usbc_names):
     items.append(pad_tht(i + 1, -5.35 + 2.54 * i, -5.08, shape='rect' if i == 0 else 'circle'))
     items.append(fp_text(name, -5.35 + 2.54 * i, -2.9, 'F.Fab', 0.45, 0.08, 90))
-for x in (-8.3, 8.3):
-    items.append(pad_npth(x, 3.5, 3.2)); items.append(fp_circle(x, 3.5, 2.1, 'F.Fab', 0.1))
-items.append(fp_rect(-10.8, -3.0, -3.5, 5.9, 'F.Fab', 0.1))                              # receptacle 7.3 x 8.9, opening at the left edge
-items.append(fp_text('USB-C', 1.5, 3.5, 'F.Fab', 0.8, 0.12)); items.append(fp_text('${REFERENCE}', 1.5, 0.5, 'F.Fab', 0.7, 0.1))
+for x, y in ((-8.8, -2.3), (8.3, 3.5)):                                                  # H1 top-left, H2 bottom-right
+    items.append(pad_npth(x, y, 3.2)); items.append(fp_circle(x, y, 2.1, 'F.Fab', 0.1))
+items.append(fp_rect(-8.45, -0.95, 0.45, 6.35, 'F.Fab', 0.1))                            # receptacle 8.9 x 7.3, opening on the bottom edge
+items.append(fp_text('USB-C', 4.5, 1.0, 'F.Fab', 0.8, 0.12)); items.append(fp_text('${REFERENCE}', 4.5, 3.5, 'F.Fab', 0.7, 0.1))
 items.append(model(MODEL + 'USB-C_Breakout.wrl'))
 write_fp('USB-C_Breakout_16P_6pin', footprint(
     'USB-C_Breakout_16P_6pin',
     'USB-C female breakout (Teansic 16-pin, Amazon B0B2NKYML9): 12.7 x 21.6 mm PCB, 1x6 header along the top edge '
-    '(VBUS, GND, CC1, D-, D+, CC2), receptacle opening on the left edge, 5.1 k CC pull-downs, two 3.2 mm holes. PCB '
-    'size from the listing, positions from photos.', 'usb-c type-c breakout', 'through_hole', items, -8, 8))
+    '(VBUS, GND, CC1, D-, D+, CC2), receptacle under the first pins opening on the bottom edge, 5.1 k CC pull-downs, '
+    '3.2 mm holes at the top-left and bottom-right. PCB size from the listing, positions from photos.',
+    'usb-c type-c breakout', 'through_hole', items, -8, 8))
 symbols.append(box_symbol(
     'USB-C_Breakout_16P_6pin', 'J', [('1', 'VBUS', 'power_out'), ('2', 'GND', 'power_in'), ('3', 'CC1', 'passive')],
     [('4', 'D-', 'bidirectional'), ('5', 'D+', 'bidirectional'), ('6', 'CC2', 'passive')],

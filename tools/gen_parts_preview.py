@@ -57,8 +57,17 @@ STANDOFF = 6.0
 RAISED = ['PB1']                                  # footprints whose models are lifted by STANDOFF after saving
 psb = pcbnew.FOOTPRINT(board); psb.SetFPID(pcbnew.LIB_ID('tbd', 'ProtoSupplies_PSB-1_Model')); psb.SetReference('PB1'); psb.SetValue('ProtoSupplies PSB-1')
 board.Add(psb); psb.SetPosition(pcbnew.VECTOR2I(mm(PSB[0]), mm(PSB[1])))
-m = pcbnew.FP_3DMODEL(); m.m_Filename = MODEL + 'ProtoSupplies_PSB-1.step'
-m.m_Offset = pcbnew.VECTOR3D(-100.0, 100.0, 0.0)     # the STEP was exported with the board centred at sheet (100, 100)
+# the library STEP is board-only; for the preview export a copy with pads, tracks and silkscreen next to the project
+# (24 MB, kept out of git, rebuilt here when missing)
+DETAIL = os.path.join(OUT, 'ProtoSupplies_PSB-1_detail.step')
+if not os.path.exists(DETAIL):
+    import subprocess
+    subprocess.run(['kicad-cli', 'pcb', 'export', 'step', '--subst-models', '--no-dnp', '--include-pads', '--include-tracks',
+                    '--include-silkscreen', '--fuse-shapes', '--user-origin', '100x100mm', '-f', '-o', DETAIL,
+                    os.path.join(ROOT, 'projects', 'psb-1', 'psb-1-bare.kicad_pcb')], check=True,
+                   env=dict(os.environ, TBD_KICAD_DIR=ROOT))
+m = pcbnew.FP_3DMODEL(); m.m_Filename = '${KIPRJMOD}/ProtoSupplies_PSB-1_detail.step'
+m.m_Offset = pcbnew.VECTOR3D(0.0, 0.0, 0.0)          # exported with --user-origin at the board centre (sheet 100, 100)
 psb.Models().push_back(m)
 psb.Reference().SetVisible(False); psb.Value().SetVisible(False)
 for sx in (-1, 1):

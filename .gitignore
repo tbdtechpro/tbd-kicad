@@ -10,3 +10,4 @@ fp-info-cache
 __pycache__/
 *.pyc
 .freecad-tmp/
+projects/parts-preview/ProtoSupplies_PSB-1_detail.step
