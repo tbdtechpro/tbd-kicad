@@ -468,17 +468,17 @@ midi_left = [('15', 'D0/RX<-MIDI_IN', 'output'), ('16', 'D1/TX->MIDI_OUT', 'inpu
              ('25', 'D10', 'passive'), ('26', 'D11', 'passive'), ('27', 'D12', 'passive'), ('28', 'D13', 'passive'),
              None, ('5', '+5V', 'power_in'), ('4', '3V3', 'passive'), ('8', 'VIN', 'passive'),
              ('6', 'GND', 'power_in'), ('7', 'GND', 'power_in'), ('29', 'GND', 'power_in')]
-midi_right = [('3', '~{RESET}', 'passive'), ('2', 'IOREF', 'passive'), ('30', 'AREF', 'passive'),
+midi_right = [('3', '~{RESET}', 'passive'), ('30', 'AREF', 'passive'),
               ('9', 'A0', 'passive'), ('10', 'A1', 'passive'), ('11', 'A2', 'passive'), ('12', 'A3', 'passive'),
-              ('13', 'SDA/A4', 'passive'), ('14', 'SCL/A5', 'passive'), ('31', 'SDA', 'passive'),
-              ('32', 'SCL', 'passive'), ('1', 'NC', 'no_connect')]
+              ('13', 'SDA/A4', 'passive'), ('14', 'SCL/A5', 'passive')]
 symbols.append(box_symbol(
     'MIDI_Shield_DIN5x3_6N138', 'A', midi_left, midi_right,
-    'Module:Arduino_UNO_R3_WithMountingHoles', '',
+    'tbd:MIDI_Shield_K194725ASJH', '',
     'Arduino UNO shield with MIDI IN (6N138 optocoupler to D0/RX, ON/OFF switch disconnects it for uploads), '
     'MIDI OUT (D1/TX) and MIDI THRU, three 5-pin DIN jacks, reset button, prototyping rows. Board marking '
-    'K194725ASJH. Pin numbers match the KiCad Arduino_UNO_R3 footprint. 31250 baud.',
-    'midi shield arduino uno din 6n138', 'Arduino*UNO*R3*'))
+    'K194725ASJH, older 6+6 / 8+8 header pattern (no NC, IOREF, SDA, SCL pins); D2-D13 and A0-A5 are also broken out to '
+    'the P4/P5/P6 proto rows. Pin numbers match the KiCad Arduino_UNO_R3 footprint. 31250 baud.',
+    'midi shield arduino uno din 6n138', 'MIDI_Shield*'))
 
 # --- ElectroCookie full-size solderable breadboard PCB ---------------------
 items = []
@@ -854,6 +854,80 @@ write_fp('RP2350B-Plus-W', footprint(
     'GP24-35 and GP43-45 (pins 41-55, 1.5 mm square on a 2.54 mm grid centred on the board, rows about 0.5 mm below '
     'pins 24/23/22: read from photos, +/-0.3 mm). Board 21 x 51 mm; the radio module hangs 5.7 mm past the bottom edge.',
     'rp2350b waveshare pico wifi', 'through_hole', items, -29, 33))
+
+# --- MIDI shield parts: DIN-5 PCB socket and the 3-pin slide switch (geometry in tools/midi_geometry.py) ------
+import midi_geometry as MG
+items = []
+for num, (x, y) in MG.DIN['pins'].items():
+    items.append(pad_tht(num, x, y, 1.8, MG.DIN['pin_drill'], 'rect' if num == '1' else 'circle'))
+for x, y in MG.DIN['lugs']:
+    d = MG.DIN['lug_drill']
+    items.append(f'(pad "" thru_hole circle (at {f(x)} {f(y)}) (size {f(d + 1.0)} {f(d + 1.0)}) (drill {f(d)})'
+                 f' (layers "*.Cu" "*.Mask") (remove_unused_layers no) (uuid "{U()}"))')
+bw, bd, face = MG.DIN['body_w'], MG.DIN['body_d'], MG.DIN['face_from_pin2']
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-bw / 2, face, bw / 2, face + bd, layer, w))
+items.append(fp_line(-bw / 2, face - MG.DIN['overhang'], bw / 2, face - MG.DIN['overhang'], 'F.Fab', 0.1))   # face when hung past the edge
+items.append(fp_rect(-bw / 2 - 0.25, face - MG.DIN['overhang'] - 0.25, bw / 2 + 0.25, face + bd + 0.25, 'F.CrtYd', 0.05))
+items.append(fp_text('opening', 0, face - 1.5, 'F.Fab', 0.7, 0.1))
+items.append(fp_text('${REFERENCE}', 0, face + bd / 2, 'F.Fab', 0.8, 0.12))
+items.append(model(MODEL + 'DIN-5_PCB_Socket.wrl'))                                     # built by tools/build_models.py
+write_fp('DIN-5_180deg_PCB_Socket', footprint(
+    'DIN-5_180deg_PCB_Socket',
+    'Right-angle PCB-mount 5-pin 180-degree DIN socket as used on the K194725ASJH MIDI shield: five pins 14.5 mm behind '
+    'the face (pin 2 at the origin, opening toward -Y; pins 1/3 16 mm apart, 4/5 9.5 mm apart 2.5 mm further back, by '
+    'calipers) and three shell lugs toward the face (from photos).',
+    'din-5 midi socket', 'through_hole', items, face - 7.5, face + bd + 2))
+items = []
+p, lug = MG.SLIDE['pitch'], MG.SLIDE['lug_spacing'] / 2
+for i, num in enumerate(('1', '2', '3')):
+    items.append(pad_tht(num, (i - 1) * p, 0, 1.5, 0.9, 'rect' if i == 0 else 'circle'))
+for x in (-lug, lug):
+    items.append(f'(pad "" thru_hole oval (at {f(x)} 0 90) (size 2.0 1.3) (drill oval 1.5 0.8)'
+                 f' (layers "*.Cu" "*.Mask") (remove_unused_layers no) (uuid "{U()}"))')
+bl, bwid, _ = MG.SLIDE['body']
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-bl / 2, -bwid / 2, bl / 2, bwid / 2, layer, w))
+items.append(fp_rect(-lug - 1.3, -bwid / 2 - 0.25, lug + 1.3, bwid / 2 + 2.0, 'F.CrtYd', 0.05))
+items.append(fp_text('${REFERENCE}', 0, -bwid / 2 - 1.2, 'F.Fab', 0.7, 0.1))
+items.append(model(MODEL + 'SW_Slide_SPDT_P2.5mm.wrl'))                                 # built by tools/build_models.py
+write_fp('SW_Slide_SPDT_P2.5mm_Lugs', footprint(
+    'SW_Slide_SPDT_P2.5mm_Lugs',
+    'Miniature SPDT slide switch: three pins at 2.5 mm, two solder lugs 10 mm apart on the same line, '
+    'body 8.6 x 3.6 mm with the actuator toward +Y. Pitch and lug spacing from photos (2.3-2.5 mm read); verify.',
+    'slide switch spdt ss12d00', 'through_hole', items, -4, 4))
+
+# --- The whole MIDI shield as a module footprint: the 32 header pins (stock Arduino_UNO_R3 numbering, true top view),
+#     outline and socket positions on F.Fab, STEP exported from projects/midi-shield ---------------------------------
+UNO_FIRST = {'J1': 3, 'J2': 9, 'J3': 30, 'J4': 22}      # J1/J2 count up along +X, J3/J4 count down (stock R3 numbering)
+items = []
+for ref, _, (hx, hy), names in MG.HEADERS:
+    for i, nm in enumerate(names):
+        num = UNO_FIRST[ref] + i if ref in ('J1', 'J2') else UNO_FIRST[ref] - i
+        items.append(pad_tht(str(num), hx + 2.54 * i, hy, 1.7, 1.0, 'rect' if num == 1 else 'circle'))
+B = MG.BOARD
+for layer, w, m in (('F.Fab', 0.1, 0.0), ('F.SilkS', 0.12, 0.1), ('F.CrtYd', 0.05, 0.25)):
+    items.append(fp_rect(B['x0'] - m, B['y0'] - m, B['x1'] + m, B['y1'] + m, layer, w))
+def rot_pt(x, y, deg):
+    c, s_ = math.cos(math.radians(deg)), math.sin(math.radians(deg))
+    return x * c + y * s_, -x * s_ + y * c
+bw, bd, face = MG.DIN['body_w'], MG.DIN['body_d'], MG.DIN['face_from_pin2']
+for ref, name, (sx, sy), rot in MG.SOCKETS:
+    corners = [(-bw / 2, face), (bw / 2, face), (bw / 2, face + bd), (-bw / 2, face + bd)]
+    pts = [rot_pt(x, y, rot) for x, y in corners]
+    for (x1, y1), (x2, y2) in zip(pts, pts[1:] + pts[:1]):
+        items.append(fp_line(sx + x1, sy + y1, sx + x2, sy + y2, 'F.Fab', 0.1))
+    lx, ly = rot_pt(0, face + bd / 2, rot)
+    items.append(fp_text('MIDI ' + name, sx + lx, sy + ly, 'F.Fab', 1.0, 0.12, rot if rot in (0, 180) else 90))
+items.append(fp_text('${REFERENCE}', 17.0, -27.0, 'F.Fab', 1.2, 0.15))
+items.append(model(MODEL + 'MIDI_Shield_K194725ASJH.wrl', offset=(0, 0, 8.5)))    # exported from projects/midi-shield; sits on 8.5 mm female headers
+write_fp('MIDI_Shield_K194725ASJH', footprint(
+    'MIDI_Shield_K194725ASJH',
+    'Arduino UNO MIDI shield (board marking K194725ASJH) as a stacked module: the older 6+6 / 8+8 header pattern '
+    '(28 pins, numbered as in the stock Arduino_UNO_R3 footprint, no NC/IOREF/SDA/SCL), true top view (R3 power pin 1 '
+    'position at the origin, digital header toward -Y, USB end toward -X), board 57.2 x 53 mm. Three DIN-5 sockets drawn '
+    'on F.Fab. Pads are the shield pins; the host needs female headers. Layout from photos and calipers, see projects/midi-shield.',
+    'midi shield arduino uno din 6n138 k194725asjh', 'through_hole', items, B['y0'] - 2.0, B['y1'] + 2.0))
 
 # --- Optocouplers with logic output (stock DIP footprints and 3D models) -----
 def opto_symbol(name, ref, anode, cathode, vcc, vo, gnd, ncs, footprint, datasheet, desc, keywords, fp_filters):

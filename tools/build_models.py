@@ -5,7 +5,8 @@ Model frames match the footprints: origin at the footprint origin, Z up from the
 3D +Y = footprint -Y (KiCad convention).  VRML units are 0.1 inch (KiCad convention).
 Bodies are built from boxes and cylinders plus text from DejaVu Sans; proportions come from the vendor drawings or
 Eagle files where we have them and from product photos otherwise."""
-import os, math
+import os, sys, math
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import FreeCAD, Part
 from FreeCAD import Vector
 
@@ -528,37 +529,6 @@ def esp32_s3_devkitc():
     return g
 
 
-def midi_shield():
-    """Arduino UNO MIDI shield (DIN IN/OUT on the USB-end edge, THRU on the power-header edge, 6N138) stacked on the
-    stock Module:Arduino_UNO_R3 footprint frame: power header pin 1 at the origin, digital header at fp y = 48.26."""
-    g = []
-    z = 11.0; t = 1.6; top = z + t
-    pcb = pcb_slab(74.1, 53.3, z, t, cx=3.55, cy=-24.15, radius=2.0)
-    power = [(2.54 * i, 0.0) for i in range(8)] + [(22.86 + 2.54 * i, 0.0) for i in range(6)]
-    digital = [(35.56 - 2.54 * i, 48.26) for i in range(8)] + [(13.72 - 2.54 * i, 48.26) for i in range(10)]
-    proto = [(33.0 + 2.54 * i, 8.0 + 2.54 * j) for i in range(2) for j in range(14)]
-    pcb = drill(drill(pcb, power + digital, 0.5), proto, 0.5)
-    g.append((pcb, GREEN))
-    pads(g, power + digital + proto, z, t)
-    for x0, x1, y in ((-1.27, 36.8, 0.0), (-10.4, 36.8, 48.26)):                                   # stacking headers
-        g.append((box(x0, x1, -y - 1.27, -y + 1.27, z - 8.5, z), BLACK))
-    for x, y in power + digital:
-        g.append((box(x - 0.32, x + 0.32, -y - 0.32, -y + 0.32, z - 8.5 - 3.0, top + 8.5), GOLD))
-    din5(g, -22.0, -37.5, top, 90); silk(g, 'IN', -22.0, -26.5, top, 1.2)
-    din5(g, -22.0, -14.0, top, 90); silk(g, 'OUT', -22.0, -3.0, top, 1.2)
-    din5(g, 10.0, -7.8, top, 180); silk(g, 'THRU', 10.0, -19.5, top, 1.2)
-    dip(g, -6.0, -30.0, top, 8, 90); silk(g, '6N138', -6.0, -30.0, top + 4.3, 0.6, 90, GREY)
-    tact(g, 0.0, -42.0, top, 6.0, 3.5, ORANGE, 1.8); silk(g, 'RESET', 0.0, -38.0, top, 0.7)
-    slide_switch(g, 19.0, -34.0, top, 90); silk(g, 'ON', 22.0, -37.5, top, 0.7); silk(g, 'OFF', 22.0, -30.5, top, 0.7)
-    for i, (x, y) in enumerate(((-6.0, -22.0), (-2.0, -22.0), (2.0, -22.0), (6.0, -22.0), (26.0, -22.0), (26.0, -26.0), (-2.0, -36.0), (2.0, -36.0))):
-        passive(g, x, y, top, 3.2, 1.6, 0.8, DARK if i % 3 else TAN, 0)
-    led_0603(g, 26.0, -30.0, top, (0.9, 0.2, 0.2))
-    silk(g, 'K194725ASJH', 30.0, -25.0, top, 0.7, 90)
-    silk(g, 'POWER', 12.0, -3.0, top, 0.8)
-    return g
-
-
-
 def rp2350b_plus_w():
     """Waveshare RP2350B-Plus-W in the footprint frame (board centre origin, USB at -Y): Pico-sized green board on
     headers, castellated pins, radio module hanging past the +Y end."""
@@ -613,13 +583,52 @@ def rp2350b_plus_w():
     silk(g, 'Waveshare', 0, -4.5, z - 0.04, 0.9, 0, WHITE)
     return g
 
+
+def din5_socket():
+    """PCB-mount DIN-5 180-degree socket in the footprint frame (pin 2 at the origin, opening toward footprint -Y
+    = 3D +Y): black body (MG.DIN), round recessed face with five pin holes, three shell lugs toward the face."""
+    import midi_geometry as MG
+    g = []
+    w, d, h = MG.DIN['body_w'], MG.DIN['body_d'], MG.DIN['body_h']
+    face = -MG.DIN['face_from_pin2']                      # 3D y of the face
+    body = box(-w / 2, w / 2, face - d, face, 0.3, h)
+    body = body.cut(cyl(7.2, 1.2, (0, face - 1.0, h / 2 + 0.8), (0, 1, 0)))
+    for num, (x, y) in MG.DIN['pins'].items():
+        pass
+    for a in (0, 45, 90, 135, 180):
+        px, pz = 3.5 * math.cos(math.radians(a)), 3.5 * math.sin(math.radians(a))
+        body = body.cut(cyl(0.9, 6.0, (px, face - 5.0, h / 2 + 0.8 + pz), (0, 1, 0)))
+    body = body.cut(box(-1.2, 1.2, face - 5.0, face + 0.1, h / 2 + 0.8 - 7.2, h / 2 + 0.8 - 5.2))   # key notch
+    g.append((body, BLACK))
+    g.append((moved(rotx(ring(0, 0, 0, 0.6, 7.6, 6.8), -90), 0, face - 0.6, h / 2 + 0.8), SILVER))
+    for num, (x, y) in MG.DIN['pins'].items():
+        g.append((box(x - 0.4, x + 0.4, -y - 0.3, -y + 0.3, -3.0, 0.3), SILVER))
+    for x, y in MG.DIN['lugs']:
+        g.append((box(x - 0.5, x + 0.5, -y - 1.2, -y + 1.2, -3.0, 0.3), SILVER))
+    return g
+
+
+def slide_switch_p2():
+    """Miniature SPDT slide switch: pins at MG.SLIDE pitch along X, metal body 8.6 x 3.6 x 5, actuator toward +Y (3D -Y)."""
+    import midi_geometry as MG
+    g = []
+    bl, bw, bh = MG.SLIDE['body']
+    g.append((box(-bl / 2, bl / 2, -bw / 2, bw / 2, 0.3, 0.3 + bh), SILVER))
+    g.append((box(-1.0, 1.0, -bw / 2 - 3.5, -bw / 2, 1.3, 0.3 + bh - 1.0), BLACK))     # actuator, slid to one side
+    for i in range(3):
+        g.append((box((i - 1) * MG.SLIDE['pitch'] - 0.3, (i - 1) * MG.SLIDE['pitch'] + 0.3, -0.25, 0.25, -3.0, 0.3), SILVER))
+    for x in (-MG.SLIDE['lug_spacing'] / 2, MG.SLIDE['lug_spacing'] / 2):
+        g.append((box(x - 0.6, x + 0.6, -0.2, 0.2, -2.5, 0.3), SILVER))
+    return g
+
 for name, builder, step in (('KY-040_Module', ky040, True), ('GC9A01_Round_1.28in_7pin', gc9a01, True),
                             ('Teensy_4.1_Assembly', teensy, False),
                             ('Adafruit_PCM510x_I2S_DAC', adafruit_pcm510x, True), ('Adafruit_TXB0104_Breakout', adafruit_txb0104, True),
                             ('Adafruit_BSS138_Level_Shifter', adafruit_bss138, True), ('STX-3120-3B', stx3120, True),
                             ('Beetle_RP2350_DFR1188', beetle_rp2350, True), ('RP2040-Zero', rp2040_zero, True),
                             ('TFT_2.8in_ILI9341_SPI_MSP2806', tft_28, True), ('ESP32-S3-DevKitC-1', esp32_s3_devkitc, True),
-                            ('MIDI_Shield_UNO', midi_shield, True), ('RP2350B-Plus-W', rp2350b_plus_w, True)):
+                            ('RP2350B-Plus-W', rp2350b_plus_w, True),
+                            ('DIN-5_PCB_Socket', din5_socket, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
     g = builder()
     write_vrml(os.path.join(OUT, name + '.wrl'), g)
     if step:

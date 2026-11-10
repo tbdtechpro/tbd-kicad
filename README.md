@@ -27,7 +27,7 @@ it under CC-BY-SA 4.0 with the KiCad library exception: designs made with it are
 | Adafruit PCM5102 / PCM5100 I2S DAC (6250 / 6251) | `Adafruit_PCM510x_I2S_DAC` | same | VRML + STEP | Adafruit EagleCAD (exact) |
 | Lonely Binary TK103 PCM5102A I2S DAC (right-angle header) | `TK103_PCM5102A_I2S_DAC` | `TK103_Module_RA_Header` | vendor STEP, see note | vendor STEP (exact) |
 | Kycon STX-3120-3B 3.5 mm stereo jack (Adafruit 1699) | `AudioJack_3.5mm_STX-3120-3B` | `Jack_3.5mm_Kycon_STX-3120-3B_Horizontal` | VRML + STEP | Kycon drawing (exact) |
-| Arduino UNO MIDI shield (3x DIN-5, 6N138) | `MIDI_Shield_DIN5x3_6N138` | stock `Module:Arduino_UNO_R3_WithMountingHoles` | `MIDI_Shield_UNO` (attach by hand) | UNO header pattern (exact) |
+| Arduino UNO MIDI shield (3x DIN-5, 6N138, marking K194725ASJH) | `MIDI_Shield_DIN5x3_6N138` | `MIDI_Shield_K194725ASJH` | VRML + STEP (from `projects/midi-shield`) | UNO 6+6/8+8 header pattern (exact), parts from photos and calipers |
 | **Breakouts and modules** | | | | |
 | Adafruit TXB0104 bi-directional level shifter (1875) | `Adafruit_TXB0104_Level_Shifter` | `Adafruit_TXB0104_Breakout` | VRML + STEP | Adafruit EagleCAD (exact) |
 | Adafruit BSS138 4-channel I2C-safe level shifter (757) | `Adafruit_BSS138_4ch_Level_Shifter` | `Adafruit_BSS138_Level_Shifter` | VRML + STEP | Adafruit EagleCAD (exact) |
@@ -93,11 +93,17 @@ If you find an error, open an issue with a measurement or a drawing and it gets 
   board. The PCB is a build guide rather than a fab file: sockets, modules and every jumper wire routed hole-to-hole and
   rendered as 22 AWG wire in the 3D viewer, with a wiring map (`WIRING.md`) and cut list (`WIRES.md`).
 - **`projects/parts-preview`**: the board in the picture above, every other part placed for a look in the 3D viewer.
+- **`projects/midi-shield`**: the K194725ASJH Arduino MIDI shield redrawn: schematic (6N138 input, TX output, THRU,
+  upload switch, reset, D2-D13 and A0-A5 broken out to the proto rows), a routed two-layer layout in the true top-view frame, and the source of the
+  `MIDI_Shield_K194725ASJH` footprint and `lib/3d/MIDI_Shield_K194725ASJH.step`. Also adds the DIN-5 socket and
+  slide switch footprints it is built from.
 - **`projects/psb-1`**: the ProtoSupplies PSB-1 itself redrawn in KiCad: schematic of the DC-input section and headers,
   the full layout with every bus, strip and breakout trace, and two board files, `psb-1.kicad_pcb` with the component
   kit fitted and `psb-1-bare.kicad_pcb` as sold. `lib/3d/ProtoSupplies_PSB-1*.step` are exported from them.
 
 ![teensy-panel in the 3D viewer](docs/images/teensy-panel.png)
+
+![midi-shield in the 3D viewer](docs/images/midi-shield.png)
 
 ## Layout and regenerating
 

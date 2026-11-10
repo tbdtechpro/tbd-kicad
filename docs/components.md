@@ -14,7 +14,9 @@ dimension and what is still unverified. Regenerate the library with `python3 too
 | ESP32-S3-DevKitC-1 | `ESP32-S3-DevKitC-1` | `ESP32-S3-DevKitC-1` | exact (Espressif library, CC-BY-SA 4.0) |
 | Waveshare RP2350B-Plus-W | `RP2350B-Plus-W` | `RP2350B-Plus-W` + VRML/STEP | pins exact (Waveshare drawing), back pads from photos |
 | TK103 PCM5102A I2S DAC | `TK103_PCM5102A_I2S_DAC` | `TK103_Module_RA_Header` + STEP | exact (vendor STEP) |
-| MIDI shield (K194725ASJH) | `MIDI_Shield_DIN5x3_6N138` | stock `Module:Arduino_UNO_R3_WithMountingHoles` | exact (UNO header pattern) |
+| MIDI shield (K194725ASJH) | `MIDI_Shield_DIN5x3_6N138` | `MIDI_Shield_K194725ASJH` + STEP | header pattern exact (UNO), parts placed from photos/calipers |
+| DIN-5 PCB socket (MIDI shield) | stock `Connector:DIN-5_180degree` | `DIN-5_180deg_PCB_Socket` + VRML/STEP | pin spacing from calipers, lugs and body from photos |
+| SPDT slide switch, 2.5 mm (MIDI shield) | stock `Switch:SW_SPDT` | `SW_Slide_SPDT_P2.5mm_Lugs` + VRML/STEP | pitch and lug spacing from photos |
 | ElectroCookie full breadboard | none (mechanical) | `ElectroCookie_Breadboard_Full` | outline/holes exact, rail length approximate |
 | Adafruit PCM510x I2S DAC | `Adafruit_PCM510x_I2S_DAC` | `Adafruit_PCM510x_I2S_DAC` + VRML/STEP | exact (Adafruit EagleCAD board) |
 | Adafruit TXB0104 breakout | `Adafruit_TXB0104_Level_Shifter` | `Adafruit_TXB0104_Breakout` + VRML/STEP | exact (Adafruit EagleCAD board) |
@@ -132,6 +134,24 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
 - Arduino UNO shield: three 5-pin DIN (IN, OUT, THRU), 6N138 optocoupler on the input, slide switch that
   disconnects MIDI IN from D0/RX so sketches can still be uploaded, reset button, prototyping rows.
 - Symbol pin numbers match KiCad's `Arduino_UNO_R3` symbol and `Module:Arduino_UNO_R3*` footprints.
+- `MIDI_Shield_K194725ASJH` is the whole shield as a stacked module: the older 6+6 / 8+8 UNO header pattern (28
+  pins: RESET..VIN, A0-A5, AREF/GND/D13-D8, D7-D0; no NC, IOREF, SDA or SCL) numbered as in the stock
+  `Arduino_UNO_R3` footprint, drawn as the real top view (R3 power-pin-1 position at the origin, digital header toward
+  -Y, USB end toward -X, board 57.2 x 53 mm from calipers). KiCad's stock `Module:Arduino_UNO_R3*` footprint is the
+  mirror image of the board seen from above (digital header at +Y), which is why the shield no longer uses it. The
+  VRML/STEP are exported from `projects/midi-shield` with the shield's pins 8.5 mm below its PCB, so the model sits
+  on an 8.5 mm female header on the host.
+- `projects/midi-shield` is the shield itself: schematic (`tools/gen_midi_shield.py`, geometry in
+  `tools/midi_geometry.py`) and a routed layout (Freerouting). Sockets: IN and OUT open toward the USB-end edge,
+  THRU toward the power/analog edge with its face just inboard of the analog header. The proto rows along the far
+  edge are a header breakout: the inner row P4 = D2-D7, P5 = D8-D13, P6 = A0-A5 (traces read from the back-side
+  photo, pin 1 of each row at the digital-header end), P10/P9/P7 and the outer P8 row are free holes. All six
+  resistors read 221 (220 R). Part positions were rectified from photos through the header pads (about 0.5 mm);
+  resistor roles (R1/R5 THRU pull-ups, R6 output pull-up) and the unused 6N138 pin 7 are from the usual circuit
+  and are flagged for a meter check.
+- Footprints `DIN-5_180deg_PCB_Socket` (pin 2 at the origin, opening toward -Y, pins 14.5 mm behind the face, three
+  shell lugs) and `SW_Slide_SPDT_P2.5mm_Lugs` (actuator toward +Y; the 2.5 mm pitch is read from photos) are the
+  parts the shield is built from.
 
 ## ElectroCookie full-size breadboard PCB
 
