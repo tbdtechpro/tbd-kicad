@@ -676,46 +676,6 @@ def rp2350b_plus_w():
     return g
 
 
-def din5_socket():
-    """PCB-mount DIN-5 180-degree socket in the footprint frame (pin 2 at the origin, opening toward footprint -Y
-    = 3D +Y), after the sockets on the MIDI shield: a thin square front plate, a round barrel behind it with two
-    windows, the contact ring and five contacts on a 7 mm circle with the key slot at the bottom, a square contact
-    block at the rear, and the five pin legs fanning out of it down to the board with the three shell lugs."""
-    import midi_geometry as MG
-    g = []
-    w, d, h = MG.DIN['body_w'], MG.DIN['body_d'], MG.DIN['body_h']
-    face = -MG.DIN['face_from_pin2']                      # 3D y of the face
-    cz = h / 2                                            # barrel axis height
-    pl = 1.6                                              # front plate thickness
-    plate = box(-w / 2, w / 2, face - pl, face, 0.3, h)
-    plate = plate.makeChamfer(0.5, [e for e in plate.Edges if abs(e.Length - (h - 0.3)) < 1e-6])
-    barrel = cyl(7.0, d - pl - 2.0, (0, face - pl + 0.05, cz), (0, -1, 0))
-    block = box(-6.5, 6.5, face - d, face - d + 2.6, cz - 6.5, cz + 6.5)
-    shell = plate.fuse(barrel).fuse(block)
-    for sx in (-1, 1):                                                                              # windows in the barrel
-        shell = shell.cut(box(sx * 2.0 - 1.6, sx * 2.0 + 1.6, face - pl - 6.5, face - pl - 2.0, cz + 5.0, cz + 8.0))
-        shell = shell.cut(box(sx * 8.0 - 2.5, sx * 8.0 + 2.5, face - pl - 6.5, face - pl - 2.0, cz - 1.5, cz + 1.5))
-    shell = shell.cut(cyl(6.0, 9.0, (0, face - 8.0, cz), (0, 1, 0)).fuse(cyl(6.6, 0.7, (0, face - 0.6, cz), (0, 1, 0))))   # opening + bevel
-    shell = shell.cut(box(-1.3, 1.3, face - 8.0, face + 0.1, cz - 7.5, cz - 4.8))                 # key slot at the bottom
-    g.append((shell, BLACK))
-    g.append((moved(rotx(ring(0, 0, 0, 5.0, 5.8, 5.3), -90), 0, face - 6.0, cz), GREY))           # contact ring
-    g.append((cyl(5.3, 0.8, (0, face - 8.0, cz), (0, 1, 0)), DARK))                                 # insulator at the back of the opening
-    contact = {'1': 180, '4': 135, '2': 90, '5': 45, '3': 0}
-    for num, (x, y) in MG.DIN['pins'].items():
-        a = math.radians(contact[num]); px, pz = 3.5 * math.cos(a), cz + 3.5 * math.sin(a)
-        g.append((cyl(0.55, 6.5, (px, face - 7.5, pz), (0, 1, 0)), SILVER))                        # contact inside the opening
-        yb = face - d + 1.3                                                                          # through the rear block
-        g.append((box(px - 0.3, px + 0.3, yb - 0.3, yb + 0.3, -3.0 if abs(x - px) < 0.5 else pz, pz + 0.3), SILVER))
-        if abs(x - px) >= 0.5:                                                                       # fanned leg: out, then down
-            g.append((box(min(x, px) - 0.3, max(x, px) + 0.3, yb - 0.3, yb + 0.3, pz - 0.3, pz + 0.3), SILVER))
-            g.append((box(x - 0.3, x + 0.3, -y - 0.3, -y + 0.3, -3.0, pz + 0.3), SILVER))
-        else:
-            g.append((box(x - 0.3, x + 0.3, -y - 0.3, -y + 0.3, -3.0, pz), SILVER))
-    for x, y in MG.DIN['lugs']:
-        g.append((box(x - 0.5, x + 0.5, -y - 0.6, -y + 0.6, -3.0, 1.2), SILVER))
-    return g
-
-
 def standoff_m3_6mm():
     """Brass hex standoff, 5.5 mm across flats, 6 mm high, with an M3 screw head on top (preview hardware)."""
     pts = [Vector(3.18 * math.cos(math.radians(60 * k + 30)), 3.18 * math.sin(math.radians(60 * k + 30)), 0) for k in range(6)]
@@ -746,7 +706,7 @@ for name, builder, step in (('KY-040_Module', ky040, True), ('GC9A01_Round_1.28i
                             ('TRRS_Jack_Breakout', trrs_breakout, True), ('WS2812_LED_Module', ws2812_module, True),
                             ('MicroSD_Card_Module', microsd_module, True), ('USB-C_Breakout', usbc_breakout, True), ('SW_Push_6mm_2pin', push_6mm_2pin, True),
                             ('RP2350B-Plus-W', rp2350b_plus_w, True),
-                            ('DIN-5_PCB_Socket', din5_socket, True), ('Standoff_M3_H6mm', standoff_m3_6mm, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
+                            ('Standoff_M3_H6mm', standoff_m3_6mm, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
     if os.environ.get('BUILD_ONLY') and name not in os.environ['BUILD_ONLY'].split(','):
         continue
     g = builder()

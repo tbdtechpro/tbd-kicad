@@ -910,7 +910,7 @@ items.append(fp_line(-bw / 2, face - MG.DIN['overhang'], bw / 2, face - MG.DIN['
 items.append(fp_rect(-bw / 2 - 0.25, face - MG.DIN['overhang'] - 0.25, bw / 2 + 0.25, face + bd + 0.25, 'F.CrtYd', 0.05))
 items.append(fp_text('opening', 0, face - 1.5, 'F.Fab', 0.7, 0.1))
 items.append(fp_text('${REFERENCE}', 0, face + bd / 2, 'F.Fab', 0.8, 0.12))
-items.append(model(MODEL + 'DIN-5_PCB_Socket.wrl'))                                     # built by tools/build_models.py
+items.append(model(MODEL + 'DIN-5_PCB_Socket.wrl'))                                     # converted by tools/convert_din5_vrml.py
 write_fp('DIN-5_180deg_PCB_Socket', footprint(
     'DIN-5_180deg_PCB_Socket',
     'Right-angle PCB-mount 5-pin 180-degree DIN socket as used on the K194725ASJH MIDI shield: five pins 14.5 mm behind '

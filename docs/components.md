@@ -157,8 +157,9 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
   resistor roles (R1/R5 THRU pull-ups, R6 output pull-up) and the unused 6N138 pin 7 are from the usual circuit
   and are flagged for a meter check.
 - Footprints `DIN-5_180deg_PCB_Socket` (pin 2 at the origin, opening toward -Y, pins 14.5 mm behind the face, three
-  shell lugs; the model has the square chamfered flange, round opening with the contact ring, five contacts on a
-  7 mm circle with the key slot at the bottom, and the narrower ribbed body of the sockets on the shield) and `SW_Slide_SPDT_P2.5mm_Lugs` (actuator toward +Y; the 2.5 mm pitch is read from photos) are the
+  shell lugs; the 3D model is converted by `tools/convert_din5_vrml.py` from a DIN-5 socket VRML in the user's CAD
+  library: the housing is scaled from that part's 21.2 x 19 mm to the measured 18 x 15.5 mm with the face 14.5 mm
+  ahead of the pin row, and the pins and lugs are redrawn at the footprint's pad positions) and `SW_Slide_SPDT_P2.5mm_Lugs` (actuator toward +Y; the 2.5 mm pitch is read from photos) are the
   parts the shield is built from.
 
 ## 1.5" SH1107 128x128 OLED, I2C (HiLetgo listing; board marking GME128128-01-IIC VER:2.0)
