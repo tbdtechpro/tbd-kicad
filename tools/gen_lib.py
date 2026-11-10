@@ -13,7 +13,7 @@ LIB = os.path.join(ROOT, 'lib')
 VENDOR = os.path.join(LIB, 'vendor')
 LIBNAME = 'tbd'
 PRETTY = os.path.join(LIB, LIBNAME + '.pretty')
-MODEL = '${KIPRJMOD}/../../lib/3d/'
+MODEL = '${TBD_KICAD_DIR}/lib/3d/'          # set TBD_KICAD_DIR to the checkout in Preferences > Configure Paths
 
 
 def f(x):

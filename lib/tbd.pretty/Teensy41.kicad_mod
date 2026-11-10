@@ -1136,7 +1136,7 @@
 		(uuid "ad40a5dd-3c91-4b9c-8ef9-1ffecaee9c88")
 	)
 	(embedded_fonts no)
-	(model "${KIPRJMOD}/../../lib/3d/Teensy_4.1_Assembly.wrl"
+	(model "${TBD_KICAD_DIR}/lib/3d/Teensy_4.1_Assembly.wrl"
 		(offset
 			(xyz 0 0 0)
 		)

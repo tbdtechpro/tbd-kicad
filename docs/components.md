@@ -22,7 +22,7 @@ dimension and what is still unverified. Regenerate the library with `python3 too
 | ProtoSupplies PSB-1 proto board | none (mechanical) | `ProtoSupplies_PSB-1` | outline/holes/grid exact, input-section parts +/-0.15 mm, V-rail continuity unverified |
 
 Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: CC-BY-SA 4.0; Adafruit EagleCAD boards: CC-BY-SA 3.0); 3D models in `lib/3d/`. Vendor documents and models without redistribution terms (DFRobot CAD/PDFs, lcdwiki drawing, Waveshare images, Lonely Binary guide and STEP) stay in the private overlay repo and are only linked here. Footprints reference models as
-`${KIPRJMOD}/../../lib/3d/...`, which resolves for any project under `projects/<name>/`.
+`${TBD_KICAD_DIR}/lib/3d/...`; set the `TBD_KICAD_DIR` path variable to the checkout (Preferences > Configure Paths).
 
 ## Teensy 4.1 (PJRC)
 

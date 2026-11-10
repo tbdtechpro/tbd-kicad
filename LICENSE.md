@@ -12,6 +12,9 @@ Vendored items keep their own terms, which are compatible with the above:
   and [XenGi/teensy.pretty](https://github.com/XenGi/teensy.pretty): MIT, Copyright (c) 2015 Ricardo Band.
 - `lib/vendor/espressif/` and the `ESP32-S3-DevKitC-1` symbol/footprint from
   [espressif/kicad-libraries](https://github.com/espressif/kicad-libraries): CC-BY-SA 4.0.
+- `lib/vendor/adafruit/` (EagleCAD board files for the PCM510x I2S DAC, TXB0104 and BSS138 level shifter breakouts,
+  with Adafruit's READMEs and licence texts alongside) from Adafruit's GitHub repositories: CC-BY-SA 3.0, designed by
+  Limor Fried/Ladyada for Adafruit Industries. The `Adafruit_*` footprints and 3D models were measured from them.
 
 **Tools** (`tools/`) are licensed under the MIT licence:
 
