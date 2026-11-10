@@ -1085,6 +1085,13 @@ write_fp('SW_Push_6x6mm_2pin_P5.08mm', footprint(
     '10-pack). Leads drawn on the centre line; the body may sit offset on the real part.',
     'tactile pushbutton momentary 6mm 2 pin', 'through_hole', items, -5, 5))
 
+# --- M3 hex standoff, 6 mm (mechanical, used to stand boards off in the parts preview) ----------------------------
+items = [pad_npth(0, 0, 3.2), fp_circle(0, 0, 3.0, 'F.Fab', 0.1), fp_circle(0, 0, 3.3, 'F.CrtYd', 0.05),
+         fp_text('${REFERENCE}', 0, -4.5, 'F.Fab', 0.6, 0.1), model(MODEL + 'Standoff_M3_H6mm.wrl')]
+write_fp('Standoff_M3_H6mm', footprint(
+    'Standoff_M3_H6mm', 'M3 clearance hole with a 6 mm brass hex standoff (5.5 mm across flats) and screw as the 3D model.',
+    'standoff m3 mounting hole', 'through_hole', items, -6, 6))
+
 # --- Optocouplers with logic output (stock DIP footprints and 3D models) -----
 def opto_symbol(name, ref, anode, cathode, vcc, vo, gnd, ncs, footprint, datasheet, desc, keywords, fp_filters):
     """Opto-isolator with an LED input (left), a dashed isolation barrier and an inverting open-collector output

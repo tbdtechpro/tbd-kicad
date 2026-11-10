@@ -1,7 +1,7 @@
 """Generate projects/parts-preview: a mock PCB that places every library part not used by teensy-panel, so the
 footprints and 3D models can be looked at in the KiCad 3D viewer. The small modules sit on the ProtoSupplies PSB-1
 grid (pad 1 on a grid hole, no nets); the large boards sit beside it. Run: python3 tools/gen_parts_preview.py"""
-import os, shutil, json
+import os, shutil, json, re
 import pcbnew
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -52,7 +52,19 @@ board.Add(rect)
 PSB = (60.0, 75.0)
 def grid(c, r):
     return PSB[0] + (c - 18.5) * 2.54, PSB[1] + (r - 18.5) * 2.54
-psb = add(LIB, 'ProtoSupplies_PSB-1', 'PB1'); centre_at(psb, *PSB)
+# the PSB-1 is a separate board: show it as its STEP model on 6 mm standoffs instead of copper on this board
+STANDOFF = 6.0
+RAISED = ['PB1']                                  # footprints whose models are lifted by STANDOFF after saving
+psb = pcbnew.FOOTPRINT(board); psb.SetFPID(pcbnew.LIB_ID('tbd', 'ProtoSupplies_PSB-1_Model')); psb.SetReference('PB1'); psb.SetValue('ProtoSupplies PSB-1')
+board.Add(psb); psb.SetPosition(pcbnew.VECTOR2I(mm(PSB[0]), mm(PSB[1])))
+m = pcbnew.FP_3DMODEL(); m.m_Filename = MODEL + 'ProtoSupplies_PSB-1.step'
+m.m_Offset = pcbnew.VECTOR3D(-100.0, 100.0, 0.0)     # the STEP was exported with the board centred at sheet (100, 100)
+psb.Models().push_back(m)
+psb.Reference().SetVisible(False); psb.Value().SetVisible(False)
+for sx in (-1, 1):
+    for sy in (-1, 1):
+        so = add(LIB, 'Standoff_M3_H6mm', 'H%d' % (len(board.GetFootprints())), 0)
+        centre_at(so, PSB[0] + sx * 45.72, PSB[1] + sy * 45.72); so.Reference().SetVisible(False)
 for name, ref, num, c, r, rot in (('RP2040-Zero', 'U2', 1, 13, 7, 0),
                                   ('Beetle_RP2350_DFR1188_THT', 'U1', 1, 21, 7, 0),
                                   ('Adafruit_TXB0104_Breakout', 'U3', 1, 13, 18, 0),
@@ -60,6 +72,7 @@ for name, ref, num, c, r, rot in (('RP2040-Zero', 'U2', 1, 13, 7, 0),
                                   ('Adafruit_PCM510x_I2S_DAC', 'U5', 1, 14, 33, 0),
                                   ('Jack_3.5mm_Kycon_STX-3120-3B_Horizontal', 'J1', 1, 34, 30, 180)):
     fp = add(LIB, name, ref, rot); pad_at(fp, num, *grid(c, r))
+    RAISED.append(ref)                                # the module sits on the raised PSB-1
 
 # larger boards beside it
 esp = add(LIB, 'ESP32-S3-DevKitC-1', 'A1', 90); centre_at(esp, 165, 24)
@@ -73,6 +86,17 @@ uno = add(LIB, 'MIDI_Shield_K194725ASJH', 'A2'); centre_at(uno, 158, 100)
 logo = add(LIB, 'Logo_TBD_Full_40mm', 'G1'); centre_at(logo, 222, 18)
 star = add(LIB, 'Logo_Star_10mm', 'G2'); centre_at(star, 282, 143)
 board.Save(PCB)
+# lift the 3D models of the PSB-1 and the modules on it (the swig wrapper does not expose the model offsets)
+text = open(PCB).read()
+def lift(block):
+    return re.sub(r'\(model (.*?)\(offset\s*\(xyz\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s*\)',
+                  lambda m: f'(model {m.group(1)}(offset (xyz {m.group(2)} {m.group(3)} {float(m.group(4)) + STANDOFF:g})', block, flags=re.S)
+parts = re.split(r'(?=\n\t\(footprint )', text)
+for i, blk in enumerate(parts):
+    m = re.search(r'\(property "Reference" "([^"]+)"', blk)
+    if m and m.group(1) in RAISED:
+        parts[i] = lift(blk)
+open(PCB, 'w').write(''.join(parts))
 
 # project file and library tables (same layout as teensy-panel)
 src = os.path.join(ROOT, 'projects', 'teensy-panel')

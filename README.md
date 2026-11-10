@@ -50,6 +50,7 @@ it under CC-BY-SA 4.0 with the KiCad library exception: designs made with it are
 | ElectroCookie full-size solderable breadboard PCB | (mechanical) | `ElectroCookie_Breadboard_Full` | | vendor drawing (exact), rails from photos |
 | ProtoSupplies PSB-1 MCU proto board with DC input | (mechanical) | `ProtoSupplies_PSB-1`, `ProtoSupplies_PSB-1_DCKit` | board STEP (bare / with kit); the DCKit carrier shows the kit parts | vendor drawing, CAD renders, the board itself |
 | PSB-1 pieces used to redraw the board | | `ProtoSupplies_PSB-1_Grid`, `PSB-1_Header_2x20_Breakout`, `PSB-1_Header_2x10_Staggered_Breakout` | | same |
+| M3 hex standoff, 6 mm (mechanical, used in the parts preview) | (mechanical) | `Standoff_M3_H6mm` | VRML + STEP | nominal |
 
 Also included: silkscreen logo footprints in two sizes each (`Logo_TBD_*`, `Logo_Star_*`), filled polygons on F.SilkS
 with no pads, made by `tools/gen_logos.py` from a PNG. Point the script at your own artwork to make more.
@@ -103,7 +104,8 @@ If you find an error, open an issue with a measurement or a drawing and it gets 
 - **`projects/teensy-panel`**: a Teensy 4.1 front panel (round display, encoder, I2S DAC) built on the ElectroCookie
   board. The PCB is a build guide rather than a fab file: sockets, modules and every jumper wire routed hole-to-hole and
   rendered as 22 AWG wire in the 3D viewer, with a wiring map (`WIRING.md`) and cut list (`WIRES.md`).
-- **`projects/parts-preview`**: the board in the picture above, every other part placed for a look in the 3D viewer.
+- **`projects/parts-preview`**: the board in the picture above, every other part placed for a look in the 3D viewer;
+  the PSB-1 sits on 6 mm standoffs as a separate board with the small breakouts plugged into it.
 - **`projects/midi-shield`**: the K194725ASJH Arduino MIDI shield redrawn: schematic (6N138 input, TX output, THRU,
   upload switch, reset, D2-D13 and A0-A5 broken out to the proto rows), a routed two-layer layout in the true top-view frame, and the source of the
   `MIDI_Shield_K194725ASJH` footprint and `lib/3d/MIDI_Shield_K194725ASJH.step`. Also adds the DIN-5 socket and

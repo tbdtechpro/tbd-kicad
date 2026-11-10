@@ -678,25 +678,42 @@ def rp2350b_plus_w():
 
 def din5_socket():
     """PCB-mount DIN-5 180-degree socket in the footprint frame (pin 2 at the origin, opening toward footprint -Y
-    = 3D +Y): black body (MG.DIN), round recessed face with five pin holes, three shell lugs toward the face."""
+    = 3D +Y), after the sockets on the MIDI shield: square front flange with chamfered corners around a round
+    recessed opening, five contacts on a 7 mm circle with the key slot at the bottom, a metal contact ring, a narrower
+    body behind the flange with a top rib, and the pins and shell lugs bent down at the rear."""
     import midi_geometry as MG
     g = []
     w, d, h = MG.DIN['body_w'], MG.DIN['body_d'], MG.DIN['body_h']
     face = -MG.DIN['face_from_pin2']                      # 3D y of the face
-    body = box(-w / 2, w / 2, face - d, face, 0.3, h)
-    body = body.cut(cyl(7.2, 1.2, (0, face - 1.0, h / 2 + 0.8), (0, 1, 0)))
-    for num, (x, y) in MG.DIN['pins'].items():
-        pass
+    cz = h / 2                                            # opening centre height
+    fl = 3.0                                              # flange depth
+    flange = box(-w / 2, w / 2, face - fl, face, 0.3, h)
+    edges = [e for e in flange.Edges if abs(e.Length - (h - 0.3)) < 1e-6]
+    flange = flange.makeChamfer(1.2, edges)
+    body = box(-w / 2 + 1.5, w / 2 - 1.5, face - d, face - fl + 0.1, 0.3, h - 0.6)
+    rib = box(-1.6, 1.6, face - d + 1.0, face - fl, h - 0.6, h)
+    shell = flange.fuse(body).fuse(rib)
+    shell = shell.cut(cyl(6.2, 9.0, (0, face - 8.0, cz), (0, 1, 0)).fuse(cyl(6.9, 0.8, (0, face - 0.7, cz), (0, 1, 0))))   # opening + bevel
+    shell = shell.cut(box(-1.3, 1.3, face - 8.0, face + 0.1, cz - 7.6, cz - 5.0))                 # key slot at the bottom
+    g.append((shell, BLACK))
+    g.append((moved(rotx(ring(0, 0, 0, 5.0, 5.9, 5.4), -90), 0, face - 6.0, cz), GREY))           # contact ring
+    g.append((cyl(5.4, 0.8, (0, face - 8.0, cz), (0, 1, 0)), DARK))                                 # insulator at the back of the opening
     for a in (0, 45, 90, 135, 180):
         px, pz = 3.5 * math.cos(math.radians(a)), 3.5 * math.sin(math.radians(a))
-        body = body.cut(cyl(0.9, 6.0, (px, face - 5.0, h / 2 + 0.8 + pz), (0, 1, 0)))
-    body = body.cut(box(-1.2, 1.2, face - 5.0, face + 0.1, h / 2 + 0.8 - 7.2, h / 2 + 0.8 - 5.2))   # key notch
-    g.append((body, BLACK))
-    g.append((moved(rotx(ring(0, 0, 0, 0.6, 7.6, 6.8), -90), 0, face - 0.6, h / 2 + 0.8), SILVER))
+        g.append((cyl(0.55, 6.5, (px, face - 7.5, cz + pz), (0, 1, 0)), SILVER))                   # contacts
     for num, (x, y) in MG.DIN['pins'].items():
         g.append((box(x - 0.4, x + 0.4, -y - 0.3, -y + 0.3, -3.0, 0.3), SILVER))
+        g.append((box(x - 0.4, x + 0.4, -y - 0.3, -y + 2.0, 0.3, 2.0), SILVER))                     # bent lead running into the body
     for x, y in MG.DIN['lugs']:
         g.append((box(x - 0.5, x + 0.5, -y - 1.2, -y + 1.2, -3.0, 0.3), SILVER))
+    return g
+
+
+def standoff_m3_6mm():
+    """Brass hex standoff, 5.5 mm across flats, 6 mm high, with an M3 screw head on top (preview hardware)."""
+    pts = [Vector(3.18 * math.cos(math.radians(60 * k + 30)), 3.18 * math.sin(math.radians(60 * k + 30)), 0) for k in range(6)]
+    hexagon = Part.Face(Part.makePolygon(pts + [pts[0]])).extrude(Vector(0, 0, 6.0))
+    g = [(hexagon.cut(cyl(1.5, 7, (0, 0, -0.5))), (0.75, 0.6, 0.25)), (cyl(2.7, 2.0, (0, 0, 6.0)), SILVER), (cyl(1.5, 2.2, (0, 0, 6.0)).cut(box(-0.3, 0.3, -1.2, 1.2, 8.0, 8.3)).cut(box(-1.2, 1.2, -0.3, 0.3, 8.0, 8.3)), SILVER)]
     return g
 
 
@@ -722,7 +739,9 @@ for name, builder, step in (('KY-040_Module', ky040, True), ('GC9A01_Round_1.28i
                             ('TRRS_Jack_Breakout', trrs_breakout, True), ('WS2812_LED_Module', ws2812_module, True),
                             ('MicroSD_Card_Module', microsd_module, True), ('USB-C_Breakout', usbc_breakout, True), ('SW_Push_6mm_2pin', push_6mm_2pin, True),
                             ('RP2350B-Plus-W', rp2350b_plus_w, True),
-                            ('DIN-5_PCB_Socket', din5_socket, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
+                            ('DIN-5_PCB_Socket', din5_socket, True), ('Standoff_M3_H6mm', standoff_m3_6mm, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
+    if os.environ.get('BUILD_ONLY') and name not in os.environ['BUILD_ONLY'].split(','):
+        continue
     g = builder()
     write_vrml(os.path.join(OUT, name + '.wrl'), g)
     if step:
