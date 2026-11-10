@@ -66,6 +66,9 @@ esp = add(LIB, 'ESP32-S3-DevKitC-1', 'A1', 90); centre_at(esp, 165, 24)
 tft = add(LIB, 'TFT_2.8in_ILI9341_SPI_MSP2806', 'DS1'); centre_at(tft, 222, 82)
 rpw = add(LIB, 'RP2350B-Plus-W', 'U6'); centre_at(rpw, 263, 48)
 oled = add(LIB, 'OLED_1.5in_SH1107_128x128_I2C', 'DS2'); centre_at(oled, 270, 112)
+for name, ref, x in (('TRRS_3.5mm_Jack_Breakout', 'J2', 18), ('WS2812_RGB_LED_Module', 'D1', 38), ('MicroSD_Card_Module_SPI_3V3', 'J3', 61),
+                     ('USB-C_Breakout_16P_6pin', 'J4', 87), ('SW_Push_6x6mm_2pin_P5.08mm', 'SW1', 103)):
+    centre_at(add(LIB, name, ref), x, 137)
 uno = add(LIB, 'MIDI_Shield_K194725ASJH', 'A2'); centre_at(uno, 158, 100)
 logo = add(LIB, 'Logo_TBD_Full_40mm', 'G1'); centre_at(logo, 222, 18)
 star = add(LIB, 'Logo_Star_10mm', 'G2'); centre_at(star, 282, 143)

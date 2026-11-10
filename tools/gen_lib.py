@@ -968,6 +968,123 @@ write_fp('MIDI_Shield_K194725ASJH', footprint(
     'on F.Fab. Pads are the shield pins; the host needs female headers. Layout from photos and calipers, see projects/midi-shield.',
     'midi shield arduino uno din 6n138 k194725asjh', 'through_hole', items, B['y0'] - 2.0, B['y1'] + 2.0))
 
+# --- Small ProtoSupplies breakouts and an Amazon USB-C breakout (PCB sizes from the listings, header pins at
+#     2.54 mm along an edge, everything else placed from the product photos; front view, board centre at the origin)
+def module_outline(items, w, h, cy=0.0):
+    hw, hh = w / 2, h / 2
+    for layer, lw in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+        items.append(fp_rect(-hw, cy - hh, hw, cy + hh, layer, lw))
+    items.append(fp_rect(-hw - 0.25, cy - hh - 0.25, hw + 0.25, cy + hh + 0.25, 'F.CrtYd', 0.05))
+
+# 3.5 mm TRRS jack breakout: 14 x 18 PCB, 1x4 header on the left edge (TIP at the bottom), PJ-320A style jack
+# opening at the top edge
+items = []; module_outline(items, 14, 18)
+for i, name in enumerate(('TIP', 'RING1', 'RING2', 'SLEEVE')):
+    items.append(pad_tht(i + 1, -5.7, 3.81 - 2.54 * i, shape='rect' if i == 0 else 'circle'))
+    items.append(fp_text(name, -2.6, 3.81 - 2.54 * i, 'F.Fab', 0.6, 0.1))
+items.append(fp_rect(-0.5, -9.0, 5.5, 3.0, 'F.Fab', 0.1))                              # jack body 6 x 12, face at the edge
+items.append(fp_circle(2.5, -9.0, 1.8, 'F.Fab', 0.1))
+items.append(fp_text('${REFERENCE}', 2.5, 6.5, 'F.Fab', 0.8, 0.12))
+items.append(model(MODEL + 'TRRS_Jack_Breakout.wrl'))
+write_fp('TRRS_3.5mm_Jack_Breakout', footprint(
+    'TRRS_3.5mm_Jack_Breakout',
+    'ProtoSupplies 3.5 mm TRRS audio jack breakout: 14 x 18 mm PCB, 1x4 header (TIP, RING1, RING2, SLEEVE) 1.3 mm '
+    'inside the left edge, PJ-320A-style jack opening on the top edge. PCB size from the listing, positions from photos.',
+    'trrs 3.5mm audio jack breakout', 'through_hole', items, -10.5, 10.5))
+symbols.append(box_symbol(
+    'TRRS_3.5mm_Jack_Breakout', 'J', [('1', 'TIP', 'passive'), ('2', 'RING1', 'passive'), ('3', 'RING2', 'passive'), ('4', 'SLEEVE', 'passive')], [],
+    f'{LIBNAME}:TRRS_3.5mm_Jack_Breakout', 'https://protosupplies.com/product/3-5mm-trrs-audio-jack-breakout/',
+    '3.5 mm TRRS female jack on a 14 x 18 mm breakout with a 1x4 header: TIP = left, RING1 = right, RING2 = mic/video '
+    '(= sleeve with a TRS plug), SLEEVE = ground.', 'trrs trs audio jack 3.5mm breakout', 'TRRS*'))
+
+# WS2812 RGB LED module: 18 x 13 PCB, 1x3 headers on both short edges (5V DI GND in on the left, 5V DO GND out on the
+# right), 5050 LED in the middle, two M2 holes at the top corners
+items = []; module_outline(items, 18, 13)
+ws_pins = [('1', '5V', -7.7, -0.5), ('2', 'DI', -7.7, 2.04), ('3', 'GND', -7.7, 4.58), ('4', '5V', 7.7, -0.5), ('5', 'DO', 7.7, 2.04), ('6', 'GND', 7.7, 4.58)]
+for num, name, x, y in ws_pins:
+    items.append(pad_tht(num, x, y, shape='rect' if num in ('1', '4') else 'circle'))
+    items.append(fp_text(name, x + (2.0 if x < 0 else -2.0), y, 'F.Fab', 0.5, 0.08))
+for x in (-6.3, 6.3):
+    items.append(pad_npth(x, -4.3, 2.2)); items.append(fp_circle(x, -4.3, 1.6, 'F.Fab', 0.1))
+items.append(fp_rect(-2.5, -1.5, 2.5, 3.5, 'F.Fab', 0.1)); items.append(fp_text('WS2812', 0, 1.0, 'F.Fab', 0.6, 0.1))
+items.append(fp_text('${REFERENCE}', 0, -4.3, 'F.Fab', 0.8, 0.12))
+items.append(model(MODEL + 'WS2812_LED_Module.wrl'))
+write_fp('WS2812_RGB_LED_Module', footprint(
+    'WS2812_RGB_LED_Module',
+    'ProtoSupplies WS2812 addressable RGB LED module: 18 x 13 mm PCB, 5050 LED, 1x3 input header on the left edge '
+    '(5V, DI, GND) and 1x3 output header on the right (5V, DO, GND), two 2.2 mm holes. PCB size from the listing, '
+    'positions from photos.', 'ws2812 neopixel rgb led module', 'through_hole', items, -8, 8))
+symbols.append(box_symbol(
+    'WS2812_RGB_LED_Module', 'D', [('1', '5V', 'power_in'), ('2', 'DI', 'input'), ('3', 'GND', 'power_in')],
+    [('4', '5V', 'passive'), ('5', 'DO', 'output'), ('6', 'GND', 'passive')],
+    f'{LIBNAME}:WS2812_RGB_LED_Module', 'https://protosupplies.com/product/ws2812-addressable-rgb-led-module/',
+    'WS2812 (WS2811 driver + 5050 RGB LED) on an 18 x 13 mm breakout, 5-7 V, 60 mA max; input header 5V/DI/GND, '
+    'output header 5V/DO/GND for chaining.', 'ws2812 neopixel rgb led module', 'WS2812*'))
+
+# MicroSD card module (3.3 V, raw slot, 10 k pull-ups): 20 x 18 PCB, 1x6 header on the left edge of the front view
+# (3V3 CS MOSI CLK MISO GND from the top), two M2 holes beside the header, card slot opening to the right (card adds 7 mm)
+items = []; module_outline(items, 20, 18)
+sd_names = ('3V3', 'CS', 'MOSI', 'CLK', 'MISO', 'GND')
+for i, name in enumerate(sd_names):
+    items.append(pad_tht(i + 1, -8.7, -6.35 + 2.54 * i, shape='rect' if i == 0 else 'circle'))
+    items.append(fp_text(name, -5.9, -6.35 + 2.54 * i, 'F.Fab', 0.5, 0.08))
+for y in (-7.4, 7.4):
+    items.append(pad_npth(-5.7, y, 2.2)); items.append(fp_circle(-5.7, y, 1.6, 'F.Fab', 0.1))
+items.append(fp_rect(-3.0, -7.5, 10.0, 7.5, 'F.Fab', 0.1)); items.append(fp_line(10.0, -5.5, 17.0, -5.5, 'F.Fab', 0.1))
+items.append(fp_line(17.0, -5.5, 17.0, 5.5, 'F.Fab', 0.1)); items.append(fp_line(10.0, 5.5, 17.0, 5.5, 'F.Fab', 0.1))   # inserted card
+items.append(fp_text('microSD', 3.5, 0, 'F.Fab', 0.8, 0.12)); items.append(fp_text('${REFERENCE}', 3.5, -8.0, 'F.Fab', 0.8, 0.12))
+items.append(model(MODEL + 'MicroSD_Card_Module.wrl'))
+write_fp('MicroSD_Card_Module_SPI_3V3', footprint(
+    'MicroSD_Card_Module_SPI_3V3',
+    'ProtoSupplies MicroSD card module (3.3 V raw slot, SPI, 10 k pull-ups): 20 x 18 mm PCB, 1x6 header on the left edge '
+    '(3V3, CS, MOSI, CLK, MISO, GND), two 2.2 mm holes, push-in slot opening to the right (card adds 7 mm). PCB size '
+    'from the listing, positions from photos.', 'microsd sd card module spi', 'through_hole', items, -10.5, 10.5))
+symbols.append(box_symbol(
+    'MicroSD_Card_Module_SPI_3V3', 'J', [('1', '3V3', 'power_in'), ('2', 'CS', 'input'), ('3', 'MOSI', 'input'),
+                                         ('4', 'CLK', 'input'), ('5', 'MISO', 'output'), ('6', 'GND', 'power_in')], [],
+    f'{LIBNAME}:MicroSD_Card_Module_SPI_3V3', 'https://protosupplies.com/product/microsd-card-module/',
+    'MicroSD card slot on a 20 x 18 mm module, SPI, 3.3 V only (no level shifter), 10 k pull-ups on the data lines; '
+    'up to 100 mA when writing.', 'microsd sd card module spi', 'MicroSD*'))
+
+# USB-C female breakout (Teansic, Amazon B0B2NKYML9): 0.5 x 0.85 in PCB, 16-pin USB 2.0 receptacle at the left end,
+# 1x6 header along the top edge (VBUS GND CC1 D- D+ CC2), 5.1 k CC pull-downs, two 3.2 mm holes
+items = []; module_outline(items, 21.6, 12.7)
+usbc_names = ('VBUS', 'GND', 'CC1', 'D-', 'D+', 'CC2')
+for i, name in enumerate(usbc_names):
+    items.append(pad_tht(i + 1, -5.35 + 2.54 * i, -5.08, shape='rect' if i == 0 else 'circle'))
+    items.append(fp_text(name, -5.35 + 2.54 * i, -2.9, 'F.Fab', 0.45, 0.08, 90))
+for x in (-8.3, 8.3):
+    items.append(pad_npth(x, 3.5, 3.2)); items.append(fp_circle(x, 3.5, 2.1, 'F.Fab', 0.1))
+items.append(fp_rect(-10.8, -3.0, -3.5, 5.9, 'F.Fab', 0.1))                              # receptacle 7.3 x 8.9, opening at the left edge
+items.append(fp_text('USB-C', 1.5, 3.5, 'F.Fab', 0.8, 0.12)); items.append(fp_text('${REFERENCE}', 1.5, 0.5, 'F.Fab', 0.7, 0.1))
+items.append(model(MODEL + 'USB-C_Breakout.wrl'))
+write_fp('USB-C_Breakout_16P_6pin', footprint(
+    'USB-C_Breakout_16P_6pin',
+    'USB-C female breakout (Teansic 16-pin, Amazon B0B2NKYML9): 12.7 x 21.6 mm PCB, 1x6 header along the top edge '
+    '(VBUS, GND, CC1, D-, D+, CC2), receptacle opening on the left edge, 5.1 k CC pull-downs, two 3.2 mm holes. PCB '
+    'size from the listing, positions from photos.', 'usb-c type-c breakout', 'through_hole', items, -8, 8))
+symbols.append(box_symbol(
+    'USB-C_Breakout_16P_6pin', 'J', [('1', 'VBUS', 'power_out'), ('2', 'GND', 'power_in'), ('3', 'CC1', 'passive')],
+    [('4', 'D-', 'bidirectional'), ('5', 'D+', 'bidirectional'), ('6', 'CC2', 'passive')],
+    f'{LIBNAME}:USB-C_Breakout_16P_6pin', 'https://www.amazon.com/dp/B0B2NKYML9',
+    'USB-C female receptacle (16-pin, USB 2.0) on a 12.7 x 21.6 mm breakout with a 1x6 header: VBUS, GND, CC1, D-, D+, '
+    'CC2; 5.1 k pull-downs on CC1/CC2 so a source supplies 5 V. Up to 3 A.', 'usb-c type-c breakout receptacle', 'USB-C_Breakout*'))
+
+# Miniature 6 x 6 mm tactile pushbutton with two 6 mm leads on 5.08 mm centres (ProtoSupplies 10-pack)
+items = []
+for i, x in enumerate((-2.54, 2.54)):
+    items.append(pad_tht(i + 1, x, 0, 1.8, 1.0, 'rect' if i == 0 else 'circle'))
+for layer, lw in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-3.0, -3.0, 3.0, 3.0, layer, lw))
+items.append(fp_circle(0, 0, 1.75, 'F.Fab', 0.1)); items.append(fp_rect(-3.5, -3.3, 3.5, 3.3, 'F.CrtYd', 0.05))
+items.append(fp_text('${REFERENCE}', 0, -4.2, 'F.Fab', 0.7, 0.1))
+items.append(model(MODEL + 'SW_Push_6mm_2pin.wrl'))
+write_fp('SW_Push_6x6mm_2pin_P5.08mm', footprint(
+    'SW_Push_6x6mm_2pin_P5.08mm',
+    'Miniature momentary tactile pushbutton, 6 x 6 x 5 mm body, two solder leads on 5.08 mm centres (ProtoSupplies '
+    '10-pack). Leads drawn on the centre line; the body may sit offset on the real part.',
+    'tactile pushbutton momentary 6mm 2 pin', 'through_hole', items, -5, 5))
+
 # --- Optocouplers with logic output (stock DIP footprints and 3D models) -----
 def opto_symbol(name, ref, anode, cathode, vcc, vo, gnd, ncs, footprint, datasheet, desc, keywords, fp_filters):
     """Opto-isolator with an LED input (left), a dashed isolation barrier and an inverting open-collector output

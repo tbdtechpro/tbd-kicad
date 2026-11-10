@@ -515,6 +515,72 @@ def oled_15():
     return g
 
 
+def small_module(w, h, colour, pins, holes=(), hole_r=1.1, z=2.54, t=1.6, square=(0,)):
+    """Common start for the little breakouts: slab, header pins, pads and holes."""
+    g = []
+    pcb = drill(drill(pcb_slab(w, h, z, t, radius=0.8), pins, 0.5), holes, hole_r)
+    g.append((pcb, colour))
+    header_pins(g, pins, z)
+    pads(g, pins, z, t, square=square)
+    if holes:
+        pads(g, holes, z, t, hole_r + 0.6, hole_r)
+    return g
+
+
+def trrs_breakout():
+    z = 2.54; t = 1.6; top = z + t
+    pins = [(-5.7, 3.81 - 2.54 * i) for i in range(4)]
+    g = small_module(14, 18, RED, pins)
+    pin_labels(g, ('TIP', 'RING1', 'RING2', 'SLEEVE'), pins, top, 0.5, 0, (2.6, 0))
+    body = box(-0.5, 5.5, -3.0, 9.0, top, top + 5.0)                                               # jack 6 x 12 x 5, face at the edge
+    body = body.cut(cyl(1.8, 6.0, (2.5, 9.1, top + 2.5), (0, -1, 0)))
+    g.append((body, BLACK))
+    return g
+
+
+def ws2812_module():
+    z = 2.54; t = 1.6; top = z + t
+    pins = [(-7.7, -0.5), (-7.7, 2.04), (-7.7, 4.58), (7.7, -0.5), (7.7, 2.04), (7.7, 4.58)]
+    g = small_module(18, 13, RED, pins, [(-6.3, -4.3), (6.3, -4.3)], 1.1, square=(0, 3))
+    pin_labels(g, ('5V', 'DI', 'GND'), pins[:3], top, 0.45, 0, (1.9, 0)); pin_labels(g, ('5V', 'DO', 'GND'), pins[3:], top, 0.45, 0, (-1.9, 0))
+    g.append((box(-2.5, 2.5, -3.5, 1.5, top, top + 1.4), WHITE))                                   # 5050 package
+    g.append((box(-1.8, 1.8, -2.8, 0.8, top + 1.4, top + 1.5), (0.95, 0.85, 0.3)))
+    silk(g, 'WS2812', -3.5, 4.5, top, 0.6, 90)
+    return g
+
+
+def microsd_module():
+    z = 2.54; t = 1.6; top = z + t
+    pins = [(-8.7, -6.35 + 2.54 * i) for i in range(6)]
+    g = small_module(20, 18, BLUE, pins, [(-5.7, -7.4), (-5.7, 7.4)], 1.1)
+    pin_labels(g, ('3V3', 'CS', 'MOSI', 'CLK', 'MISO', 'GND'), pins, top, 0.45, 0, (2.6, 0))
+    slot = box(-3.0, 10.0, -7.5, 7.5, top, top + 1.9).cut(box(-2.0, 10.5, -5.6, 5.6, top + 0.3, top + 1.3))   # push-in slot, open to +X
+    g.append((slot, SILVER))
+    for i in range(4):
+        passive(g, -4.5, -5.0 + 2.2 * i, top, 1.6, 0.8, 0.5, DARK, 0)                              # 10 k pull-ups
+    return g
+
+
+def usbc_breakout():
+    z = 2.54; t = 1.6; top = z + t
+    pins = [(-5.35 + 2.54 * i, -5.08) for i in range(6)]
+    g = small_module(21.6, 12.7, RED, pins, [(-8.3, 3.5), (8.3, 3.5)], 1.6)
+    pin_labels(g, ('VBUS', 'GND', 'CC1', 'D-', 'D+', 'CC2'), pins, top, 0.4, 90, (0, 2.2))
+    shell = box(-10.8, -3.5, -5.9, 3.0, top, top + 3.2).cut(box(-11.0, -4.5, -5.1, 2.2, top + 0.5, top + 2.7))   # receptacle opening at -X
+    g.append((shell, SILVER))
+    passive(g, 2.0, 1.5, top, 1.6, 0.8, 0.5, DARK, 0); passive(g, 5.0, 1.5, top, 1.6, 0.8, 0.5, DARK, 0)          # 5.1 k CC pull-downs
+    return g
+
+
+def push_6mm_2pin():
+    g = []
+    g.append((box(-3.0, 3.0, -3.0, 3.0, 0, 3.5), DARK))
+    g.append((cyl(1.75, 1.5, (0, 0, 3.5)), BLACK))
+    for x in (-2.54, 2.54):
+        g.append((box(x - 0.3, x + 0.3, -0.15, 0.15, -6.0, 0.2), SILVER))
+    return g
+
+
 def esp32_s3_devkitc():
     """ESP32-S3-DevKitC-1 in the Espressif footprint frame: pin 1 at the origin, pins down +Y, 2nd row at x = 22.86."""
     g = []
@@ -653,6 +719,8 @@ for name, builder, step in (('KY-040_Module', ky040, True), ('GC9A01_Round_1.28i
                             ('Adafruit_BSS138_Level_Shifter', adafruit_bss138, True), ('STX-3120-3B', stx3120, True),
                             ('Beetle_RP2350_DFR1188', beetle_rp2350, True), ('RP2040-Zero', rp2040_zero, True),
                             ('TFT_2.8in_ILI9341_SPI_MSP2806', tft_28, True), ('OLED_1.5in_SH1107_I2C', oled_15, True), ('ESP32-S3-DevKitC-1', esp32_s3_devkitc, True),
+                            ('TRRS_Jack_Breakout', trrs_breakout, True), ('WS2812_LED_Module', ws2812_module, True),
+                            ('MicroSD_Card_Module', microsd_module, True), ('USB-C_Breakout', usbc_breakout, True), ('SW_Push_6mm_2pin', push_6mm_2pin, True),
                             ('RP2350B-Plus-W', rp2350b_plus_w, True),
                             ('DIN-5_PCB_Socket', din5_socket, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
     g = builder()

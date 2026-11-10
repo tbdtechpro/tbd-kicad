@@ -33,12 +33,19 @@ it under CC-BY-SA 4.0 with the KiCad library exception: designs made with it are
 | Adafruit TXB0104 bi-directional level shifter (1875) | `Adafruit_TXB0104_Level_Shifter` | `Adafruit_TXB0104_Breakout` | VRML + STEP | Adafruit EagleCAD (exact) |
 | Adafruit BSS138 4-channel I2C-safe level shifter (757) | `Adafruit_BSS138_4ch_Level_Shifter` | `Adafruit_BSS138_Level_Shifter` | VRML + STEP | Adafruit EagleCAD (exact) |
 | KY-040 rotary encoder module (right-angle header) | `KY-040_Rotary_Encoder_Module` | `KY-040_Module_RA_Header` | VRML + STEP | header exact, board from photos |
+| ProtoSupplies 3.5 mm TRRS jack breakout | `TRRS_3.5mm_Jack_Breakout` | same | VRML + STEP | listing size, photos |
+| ProtoSupplies WS2812 RGB LED module | `WS2812_RGB_LED_Module` | same | VRML + STEP | listing size, photos |
+| ProtoSupplies MicroSD card module (3.3 V, SPI) | `MicroSD_Card_Module_SPI_3V3` | same | VRML + STEP | listing size, photos |
+| Teansic USB-C female breakout, 16-pin receptacle, 6-pin header | `USB-C_Breakout_16P_6pin` | same | VRML + STEP | listing size, photos |
 | **Connectors and switches** | | | | |
 | DIN-5 180° PCB socket (as on the MIDI shield) | stock `Connector:DIN-5_180degree` | `DIN-5_180deg_PCB_Socket` | VRML + STEP | pin spacing by calipers, lugs and body from photos |
 | SPDT slide switch, 2.5 mm pitch with lugs (as on the MIDI shield) | stock `Switch:SW_SPDT` | `SW_Slide_SPDT_P2.5mm_Lugs` | VRML + STEP | pitch and lugs from photos |
+| Miniature 6 x 6 mm tactile pushbutton, 2 leads on 5.08 mm (ProtoSupplies 10-pack) | stock `Switch:SW_Push` | `SW_Push_6x6mm_2pin_P5.08mm` | VRML + STEP | listing dimensions |
 | **Optocouplers** | | | | |
 | Sharp PC900V OPIC photocoupler (MIDI in) | `PC900V` | stock `Package_DIP:DIP-6_W7.62mm` | stock | Sharp drawing (exact) |
 | Toshiba TLP2962 15 MBd photocoupler | `TLP2962` | stock `Package_DIP:DIP-8_W7.62mm` | stock | Toshiba drawing (exact) |
+| **Covered by stock KiCad** | | | | |
+| APMemory APS6404L / ESP-PSRAM64H 8 MB QSPI PSRAM (Teensy 4.1 add-on) | stock `Memory_RAM:APS6404L-SQRx-SN` | stock `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | stock | datasheet (SOP-8 150 mil) |
 | **Prototyping boards** | | | | |
 | ElectroCookie full-size solderable breadboard PCB | (mechanical) | `ElectroCookie_Breadboard_Full` | | vendor drawing (exact), rails from photos |
 | ProtoSupplies PSB-1 MCU proto board with DC input | (mechanical) | `ProtoSupplies_PSB-1`, `ProtoSupplies_PSB-1_DCKit` | board STEP (bare / with kit); the DCKit carrier shows the kit parts | vendor drawing, CAD renders, the board itself |

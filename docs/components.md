@@ -11,6 +11,12 @@ dimension and what is still unverified. Regenerate the library with `python3 too
 | 1.5" SH1107 OLED I2C | `OLED_1.5in_SH1107_128x128_I2C` | `OLED_1.5in_SH1107_128x128_I2C` + VRML/STEP | PCB, holes, header, glass by calipers |
 | 1.28" round GC9A01, 7-pin | `GC9A01_Round_1.28in_7pin` | `GC9A01_Round_1.28in_7pin` | header exact, outline approximate |
 | KY-040 encoder module | `KY-040_Rotary_Encoder_Module` | `KY-040_Module_RA_Header` | header exact, module size approximate |
+| ProtoSupplies TRRS jack breakout | `TRRS_3.5mm_Jack_Breakout` | same + VRML/STEP | PCB size from the listing, header and jack from photos |
+| ProtoSupplies WS2812 LED module | `WS2812_RGB_LED_Module` | same + VRML/STEP | PCB size from the listing, headers and holes from photos |
+| ProtoSupplies MicroSD module | `MicroSD_Card_Module_SPI_3V3` | same + VRML/STEP | PCB size from the listing, header and holes from photos |
+| Teansic USB-C breakout | `USB-C_Breakout_16P_6pin` | same + VRML/STEP | PCB size from the listing, header, holes and receptacle from photos |
+| 6 mm 2-lead tactile pushbutton | stock `Switch:SW_Push` | `SW_Push_6x6mm_2pin_P5.08mm` + VRML/STEP | body and lead spacing from the listing |
+| APS6404L 8 MB PSRAM | stock `Memory_RAM:APS6404L-SQRx-SN` | stock `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | datasheet |
 | RP2040-Zero form factor | `RP2040-Zero` | `RP2040-Zero` | edge pins exact (Waveshare drawing), back pads approximate |
 | ESP32-S3-DevKitC-1 | `ESP32-S3-DevKitC-1` | `ESP32-S3-DevKitC-1` | exact (Espressif library, CC-BY-SA 4.0) |
 | Waveshare RP2350B-Plus-W | `RP2350B-Plus-W` | `RP2350B-Plus-W` + VRML/STEP | pins exact (Waveshare drawing), back pads from photos |
@@ -164,6 +170,24 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
   the reliable figure, the panel cut varies), header centred with its body 0.15 mm below the top edge (pins 1.42 mm in).
 - Footprint frame: front view, board centre at the origin, pin 1 (VCC) at the right, glass starting 4.1 mm below the
   top edge (photo), active area 26.86 mm square centred 20.5 mm below the top edge.
+
+## Small breakouts (ProtoSupplies TRRS jack, WS2812, MicroSD; Teansic USB-C) and the 2-lead pushbutton
+
+- All four breakouts: front view, board centre at the origin, header pins on a 2.54 mm pitch 1.3 mm inside the edge
+  they sit on. Only the PCB length and width come from the listings; header position along the edge, holes and the
+  connector body are read from the product photos (about 0.5 mm) and are worth a caliper check before a tight fit.
+- TRRS (14 x 18): 1x4 header on the left edge, TIP at the bottom and SLEEVE at the top; PJ-320A-style jack opening on
+  the top edge. XKB's PJ-320A drawing is in the private repo.
+- WS2812 (18 x 13): input header 5V/DI/GND on the left edge, output header 5V/DO/GND on the right, both in the lower
+  half; 2.2 mm holes at the top corners; 5050 LED in the middle.
+- MicroSD (20 x 18): 1x6 header 3V3/CS/MOSI/CLK/MISO/GND on the left edge (top to bottom), 2.2 mm holes beside it,
+  push-in slot opening to the right; an inserted card adds 7 mm. 3.3 V only, 10 k pull-ups on the data lines.
+- USB-C (12.7 x 21.6): 1x6 header VBUS/GND/CC1/D-/D+/CC2 along the top edge, receptacle opening on the left edge,
+  5.1 k pull-downs on CC1/CC2, 3.2 mm holes in the lower corners.
+- Pushbutton: 6 x 6 x 5 mm body, two 6 mm leads on 5.08 mm centres drawn on the centre line (the body may sit offset
+  on the real part); use the stock `Switch:SW_Push` symbol.
+- The 8 MB PSRAM for the Teensy 4.1 (APS6404L-3SQR-SN / ESP-PSRAM64H) needs no library part: KiCad ships the
+  `Memory_RAM:APS6404L-SQRx-SN` symbol and the SOP-8 150 mil footprint; the datasheet is in the private repo.
 
 ## ElectroCookie full-size breadboard PCB
 
