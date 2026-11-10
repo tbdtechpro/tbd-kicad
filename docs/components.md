@@ -21,7 +21,7 @@ dimension and what is still unverified. Regenerate the library with `python3 too
 | Kycon STX-3120-3B 3.5 mm jack | `AudioJack_3.5mm_STX-3120-3B` | `Jack_3.5mm_Kycon_STX-3120-3B_Horizontal` + VRML/STEP | exact (Kycon drawing) |
 | Sharp PC900V photocoupler | `PC900V` | stock `Package_DIP:DIP-6_W7.62mm` | exact (Sharp drawing) |
 | Toshiba TLP2962 photocoupler | `TLP2962` | stock `Package_DIP:DIP-8_W7.62mm` | exact (Toshiba drawing) |
-| ProtoSupplies PSB-1 proto board | none (mechanical) | `ProtoSupplies_PSB-1` | outline/holes/grid exact, input-section parts +/-0.15 mm, V-rail continuity unverified |
+| ProtoSupplies PSB-1 proto board | none (mechanical) | `ProtoSupplies_PSB-1`, `_DCKit`, `_Grid`, `PSB-1_Header_*` + STEP | outline/holes/grid exact, input-section parts +/-0.15 mm, V-rail continuity unverified |
 
 Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: CC-BY-SA 4.0; Adafruit EagleCAD boards: CC-BY-SA 3.0); 3D models in `lib/3d/`. Vendor documents and models without redistribution terms (DFRobot CAD/PDFs, lcdwiki drawing, Waveshare images, Lonely Binary guide and STEP) stay in the private overlay repo and are only linked here. Footprints reference models as
 `${TBD_KICAD_DIR}/lib/3d/...`; set the `TBD_KICAD_DIR` path variable to the checkout (Preferences > Configure Paths).
@@ -164,23 +164,34 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
 
 ## ProtoSupplies PSB-1 MCU proto board with DC input
 
-- 102 x 102 mm FR-4, 1.6 mm, ENIG, four 3.5 mm holes on a 91.44 mm square (vendor dimension drawing). The 2.54 mm grid
-  is 38 x 38 positions centred on the board; the holes sit half a pitch outside the outer rows/columns (checked on
-  the vendor CAD renders, where they land at grid (0.5, 0.5)). 1.02 mm plated holes, 1.78 mm pads.
-- Layout, read from the front/back CAD renders (private overlay `reference/photos/PSB-1-*`), column C / row R from 0
-  at the top-left: 2x20 header at rows 0-1, columns 3-22 (pin 1 bottom-left, odd pins in row 1) with breakout pads
-  in rows 2-3 (row 2 joins the odd pins, row 3 the even); staggered 2x10 header at columns 25-34 (rows 0/2 shifted
-  +1.27 mm) with breakout pads below; ground band (back-side trace) at row 4 and V band (front-side, one segment per
-  column group) at row 5, each with feed pads at columns 3 8 15 22 29 34; V/G column pairs at C0/1, 5/6, 10/11, 18/19,
-  26/27, 31/32, 36/37; 3-hole strips at C2-4, C7-9 (rows 6-24), C28-30, C33-35 (rows 6-33); 6-hole strips at C12-17
-  and C20-25 (rows 6-37); 2x2 VIN/V jumper at C9-10 rows 26-27 (top row = V of column 10), VIN column at C10 rows
-  28-37. DC input section bottom-left (DC-005 jack P1, JST J1, C1 100 uF at 2 mm, C2 100 nF, R1 1 k, 3 mm LED);
-  nets from the vendor schematic, positions +/-0.15 mm from the render; LED polarity read from the silk, verify.
-- Pad names are nets: `H1-H40`, `K1-K20`, `G`, `V1-V7` (left to right), `VIN`, `LED`, `a<row>`..`f<row>` for the
-  strips (rows 1-38 from the top). **The renders show the seven V rails as separate copper segments**, each with its
-  own feed pad, while the vendor schematic draws a single V net; measure the board and set `PSB_V_COMMON = True` in
-  `tools/gen_lib.py` if they are joined. Copper lines in the footprint only illustrate the buses; a design still
-  needs board-level tracks for connectivity (same as the ElectroCookie footprint).
+- 102 x 102 mm FR-4, 1.6 mm, ENIG, 1.5 mm corner radius, four 3.5 mm holes on a 91.44 mm square (vendor dimension
+  drawing). The 2.54 mm grid is 38 x 38 positions centred on the board; the holes sit half a pitch outside the outer
+  rows/columns (checked on the vendor CAD renders and the board). 1.02 mm plated holes, 1.78 mm pads.
+- Layout, from the CAD renders and photos of the board (private overlay `reference/photos/psb-1/`), column C / row R
+  from 0 at the top-left, all in `tools/psb1_geometry.py`: 2x20 header at rows 0-1, columns 3-22 (pin 1 bottom-left,
+  odd pins in row 1) with breakout pads in rows 2-3 (row 2 joins the odd pins straight down on the back, row 3 the
+  even pins by a front-side trace swinging between the columns); staggered 2x10 header at columns 25-34 (even pins and
+  their breakouts 1.27 mm to the right) with breakout rows 2-3; ground band (back-side trace) at row 4 and V band
+  segments (front-side) at row 5, feed pad pairs at columns 3 8 15 22 29 34; V/G column pairs at C0/1, 5/6, 10/11,
+  18/19, 26/27, 31/32, 36/37; 3-hole strips at C2-4, C7-9 (rows 6-24), C28-30, C33-35 (rows 6-33); 6-hole strips at
+  C12-17 and C20-25 (rows 6-37); 2x2 VIN/V jumper at C9-10 rows 26-27 (top row = V of column 10, two shunts bridge
+  VIN to it); VIN column at C10 rows 28-37.
+- DC input section, bottom-left: P1 barrel jack on the GCT DCJ200-10-A pattern (centre pin 6.3 mm from the sleeve pin,
+  switch pin 4.8 mm to the side; the stock KiCad footprint matches the slots on the board), J1 JST XH 2-pin (+ at the
+  bottom), C1 100 uF at 2 mm pitch (+ at the bottom), C2 100 nF, R1 1 k at 10.16 mm, 3 mm LED. Nets from the vendor
+  schematic. The LED anode is the upper pad: the back-side trace from R1 ends there, although the "+" silk sits by the
+  lower pad. Positions +/-0.15 mm from the render.
+- Library pieces: `ProtoSupplies_PSB-1` (full carrier, pads named by net, no 3D), `ProtoSupplies_PSB-1_DCKit` (same
+  pads plus the stock 3D models of the kit parts in place), `ProtoSupplies_PSB-1_Grid` (grid only, no copper graphics,
+  for the layout), `PSB-1_Header_2x20_Breakout` and `PSB-1_Header_2x10_Staggered_Breakout` (pin 1 at the origin).
+  Pad names: `H1-H40`, `K1-K20`, `G`, `V1-V7` (left to right, the jumper feeds V3), `VIN`, `LED`, `a<row>`..`f<row>`
+  (rows 1-38). Copper lines in the carrier footprints only illustrate the buses.
+- `projects/psb-1` is the board redrawn: schematic (kit parts and headers, buses as labels), `psb-1.kicad_pcb` with the
+  kit fitted and `psb-1-bare.kicad_pcb` with the kit parts DNP. All bus, strip, breakout and input traces are tracks;
+  ERC is clean and DRC is clean apart from the jack and LED courtyards touching, as on the real board.
+  `lib/3d/ProtoSupplies_PSB-1.step` (bare) and `ProtoSupplies_PSB-1_DCKit.step` are exported from the two boards.
+- **Still unverified:** whether the seven V band segments are joined (drawn separate; `V_COMMON`), and whether the
+  two pads of a feed pair sit on one copper strip (drawn separate; `FEED_PAIRS_JOINED` is reserved, not yet wired in).
 
 ## Sharp PC900V (PC900V0NSZXF) OPIC photocoupler
 

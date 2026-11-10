@@ -681,121 +681,122 @@ write_fp('Jack_3.5mm_Kycon_STX-3120-3B_Horizontal', footprint(
     'audio jack 3.5mm kycon stx-3120 adafruit 1699', 'through_hole', items, 9.5, -9.5))
 
 # --- ProtoSupplies PSB-1 MCU proto board with DC input ---------------------
-# 102 x 102 mm, four 3.5 mm holes on a 91.44 mm square. 38 x 38 grid of 2.54 mm positions centred on the board
-# (hole centres sit half a pitch outside the outer columns/rows; checked against the vendor CAD renders, where the
-# holes land at grid (0.5, 0.5) and (36.5, 0.5)). Column C and row R below count from 0 at the top-left.
-# Layout read from the vendor's front/back CAD renders (protosupplies.com, PSB-1-CAD-Front/Back.jpg):
-#  rows 0-1  C3-22   2x20 header (pin 1 bottom-left, odd pins in row 1, even in row 0); rows 2-3 breakout pads
-#            C25-34  staggered 2x10 header (rows 0/2 shifted +1.27 mm); rows 2-3 breakout pads
-#  row 4     G band  (back-side trace joining every G column) with feed pads at C3 8 15 22 29 34
-#  row 5     V band  front-side trace per column group, feed pads at the same columns
-#  rows 6+   pairs of V/G bus columns: V at C0 5 10 18 26 31 36, G at C1 6 11 19 27 32 37;
-#            3-hole strips C2-4, C7-9 (rows 6-24) and C28-30, C33-35 (rows 6-33); 6-hole strips C12-17, C20-25 (rows 6-37)
-#  rows 26-27 C9-10  2x2 VIN/V jumper (top row = V of C10, bottom row = VIN); C10 rows 28-37 = VIN column
-#  bottom-left        DC input section: P1 DC-005 jack, J1 2-pin JST, C1 100 uF (2 mm), C2 100 nF, R1 1 k, 3 mm LED
-# The renders show the seven V rails as separate copper segments (each with its own feed pad); the vendor schematic
-# draws one V net. They are named V1..V7 here; set PSB_V_COMMON = True to merge them after checking with a meter.
-PSB_V_COMMON = False
-P = 2.54
-def psb(c, r):
-    return (c - 18.5) * P, (r - 18.5) * P
-items = []
-def ppad(num, c, r, size=1.78, drill=1.02, shape='circle'):
-    x, y = psb(c, r)
-    items.append(pad_tht(num, x, y, size, drill, shape))
-def pline(c1, r1, c2, r2, layer, w=1.0):
-    x1, y1 = psb(c1, r1); x2, y2 = psb(c2, r2)
-    items.append(fp_line(x1, y1, x2, y2, layer, w))
-def vname(i):
-    return 'V' if PSB_V_COMMON else f'V{i}'
-# headers
-for i in range(20):
-    ppad(f'H{2*i+1}', 3 + i, 1, shape='rect' if i == 0 else 'circle'); ppad(f'H{2*i+2}', 3 + i, 0)
-    ppad(f'H{2*i+1}', 3 + i, 2); ppad(f'H{2*i+2}', 3 + i, 3)                   # breakout pads (row 2 = odd, row 3 = even)
-    pline(3 + i, 1, 3 + i, 2, 'B.Cu', 0.4); pline(3 + i, 0, 3 + i, 3, 'F.Cu', 0.3)
-for i in range(10):
-    ppad(f'K{2*i+1}', 25 + i, 1, shape='rect' if i == 0 else 'circle'); ppad(f'K{2*i+2}', 25.5 + i, 0)
-    ppad(f'K{2*i+1}', 25 + i, 3); ppad(f'K{2*i+2}', 25.5 + i, 2)
-    pline(25 + i, 1, 25 + i, 3, 'B.Cu', 0.4); pline(25.5 + i, 0, 25.5 + i, 2, 'F.Cu', 0.3)
-# bus columns
-V_COLS = {0: (6, 24), 5: (6, 24), 10: (6, 24), 18: (6, 37), 26: (6, 37), 31: (6, 33), 36: (6, 33)}
-G_COLS = {1: (6, 24), 6: (6, 24), 11: (6, 37), 19: (6, 37), 27: (6, 37), 32: (6, 33), 37: (6, 33)}
-FEED = (3, 8, 15, 22, 29, 34)
-for i, (c, (r0, r1)) in enumerate(sorted(V_COLS.items()), start=1):
-    for r in range(r0, r1 + 1):
-        ppad(vname(i), c, r, shape='rect' if r == r0 else 'circle')
-    pline(c, r0, c, r1, 'F.Cu'); pline(c, r0, c, r1, 'B.Cu')
-    seg0 = 0 if i == 1 else c - 3                                                   # V band segment: from the strip group to the V column
-    pline(seg0, 5, c, 5, 'F.Cu', 1.5); pline(c, 5, c, r0, 'F.Cu')
-    if i > 1:
-        ppad(vname(i), FEED[i - 2], 5, shape='rect')
-for c, (r0, r1) in G_COLS.items():
-    for r in range(r0, r1 + 1):
-        ppad('G', c, r, shape='rect' if r == r0 else 'circle')
-    pline(c, r0, c, r1, 'F.Cu'); pline(c, r0, c, r1, 'B.Cu'); pline(c, 4, c, r0, 'B.Cu')
-pline(1, 4, 37, 4, 'B.Cu', 1.5)
-for c in FEED:
-    ppad('G', c, 4, shape='rect')
-# prototype strips
-STRIPS = (('a', 2, 4, 6, 24), ('b', 7, 9, 6, 24), ('c', 12, 17, 6, 37), ('d', 20, 25, 6, 37), ('e', 28, 30, 6, 33), ('f', 33, 35, 6, 33))
-for grp, c0, c1, r0, r1 in STRIPS:
-    for r in range(r0, r1 + 1):
-        for c in range(c0, c1 + 1):
-            ppad(f'{grp}{r + 1}', c, r)
-        pline(c0, r, c1, r, 'F.Cu', 0.6); pline(c0, r, c1, r, 'B.Cu', 0.6)
-# VIN/V jumper, VIN column
-for c in (9, 10):
-    ppad(vname(3), c, 26, shape='rect'); ppad('VIN', c, 27, shape='rect')
-pline(9, 26, 10, 26, 'F.Cu'); pline(9, 27, 10, 27, 'F.Cu'); pline(10, 24, 10, 26, 'F.Cu')
-for r in range(28, 38):
-    ppad('VIN', 10, r, shape='rect' if r == 28 else 'circle')
-pline(10, 27, 10, 37, 'F.Cu'); pline(10, 27, 10, 37, 'B.Cu'); pline(9, 27, 9, 37.5, 'F.Cu', 1.5)
-# DC input section (positions measured on the vendor render, +/-0.15 mm; nets from the vendor schematic)
-ppad('G', 0.75, 29.5, shape='rect'); ppad('VIN', 0.75, 30.5)                      # J1 JST PH 2.54: pin 1 (-) top, pin 2 (+) bottom
-ppad('G', 4.0, 29.74); ppad('VIN', 4.0, 30.54)                                     # C1 100 uF, 2 mm pitch, + at the bottom
-ppad('G', 6.0, 29.5); ppad('VIN', 6.0, 30.5)                                       # C2 100 nF
-ppad('VIN', 7.5, 29.0); ppad('LED', 7.5, 33.0)                                     # R1 1 k, 10.16 mm pitch
-ppad('G', 7.5, 35.0); ppad('LED', 7.5, 36.0)                                       # 3 mm LED: cathode top, anode (+) bottom (orientation from silk, verify)
-for num, c, r, rot in (('VIN', 4.28, 33.14, 0), ('G', 4.27, 35.64, 0), ('G', 6.06, 34.32, 90)):   # P1 DC-005 jack: centre pin, sleeve, switch
-    x, y = psb(c, r)
-    items.append(f'(pad "{num}" thru_hole oval (at {f(x)} {f(y)} {rot}) (size 3.4 1.9) (drill oval 3.0 1.0)'
-                 f' (layers "*.Cu" "*.Mask") (remove_unused_layers no) (uuid "{U()}"))')
-pline(9, 30.5, 7.5, 30.5, 'F.Cu', 1.5); pline(7.5, 30.5, 0.75, 30.5, 'F.Cu', 1.5); pline(4.0, 30.54, 4.28, 33.14, 'F.Cu', 1.5)
-# outline, holes, silkscreen
-for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
-    items.append(fp_rect(-51.0, -51.0, 51.0, 51.0, layer, w))
-items.append(fp_rect(-51.25, -51.25, 51.25, 51.25, 'F.CrtYd', 0.05))
-for x in (-45.72, 45.72):
-    for y in (-45.72, 45.72):
-        items.append(pad_npth(x, y, 3.5))
-        items.append(fp_circle(x, y, 3.0, 'F.Fab', 0.1))
-x, y = psb(2.5, 32.9); items.append(fp_rect(x, y, x + 9.0, 51.0, 'F.Fab', 0.1))                     # P1 body
-x, y = psb(3, 0); items.append(fp_rect(x - 1.27, y - 1.27, x + 19 * P + 1.27, y + P + 1.27, 'F.SilkS'))   # 2x20 outline
-x, y = psb(25, 0); items.append(fp_rect(x - 1.27, y - 1.27, x + 9.5 * P + 1.27, y + P + 1.27, 'F.SilkS'))  # 2x10 outline
-for txt, c, r in (('1', 2, 1), ('2', 2, 0), ('39', 23.2, 1), ('40', 23.2, 0)):
-    x, y = psb(c, r); items.append(fp_text(txt, x, y, 'F.SilkS', 0.7, 0.1))
-for c in FEED:
-    x, y = psb(c - 1.5, 4); items.append(fp_text('G', x, y, 'F.SilkS', 0.8, 0.12))
-for i, c in enumerate(sorted(V_COLS), start=1):
-    x, y = psb(c, 5); items.append(fp_text('V', x, y, 'F.SilkS', 0.8, 0.12))
-    r1 = V_COLS[c][1]; x, y = psb(c, r1 + 1); items.append(fp_text('V', x, y, 'F.SilkS', 0.8, 0.12))
-    x, y = psb(c + 1, r1 + 1); items.append(fp_text('G', x, y, 'F.SilkS', 0.8, 0.12))
-for txt, c, r in (('VIN', 10, 38), ('G', 11, 38), ('V', 8, 26), ('VIN', 8, 27), ('J1', 1.6, 30), ('C1', 4, 31.3), ('C2', 6, 31.3),
-                  ('R1', 7.5, 34), ('LED', 7.5, 37), ('P1', 1.9, 35)):
-    x, y = psb(c, r); items.append(fp_text(txt, x, y, 'F.SilkS', 0.7, 0.1))
-x, y = psb(3.5, 25.5); items.append(fp_text('PSB-1', x, y, 'F.SilkS', 1.2, 0.15))
-items.append(fp_text('ProtoSupplies PSB-1 102 x 102 (V/G bus column pairs, 3- and 6-hole strips, 2x20 + 2x10 headers, DC input)', 0, -48.5, 'F.Fab', 1.0, 0.15))
-items.append(fp_text('${REFERENCE}', 0, 48.5, 'F.Fab'))
-write_fp('ProtoSupplies_PSB-1', footprint(
-    'ProtoSupplies_PSB-1',
-    'ProtoSupplies PSB-1 MCU proto board with DC input: 102 x 102 mm FR-4, 3.5 mm holes on a 91.44 mm square, '
-    '2.54 mm grid of 1.02 mm plated holes with 1.78 mm pads. Pads are named by net: H1-H40 (2x20 header and its '
-    'breakout pads), K1-K20 (staggered 2x10 header), G (all ground columns, the ground band and the DC input ground), '
-    'V1-V7 (the seven V bus columns left to right, each with the feed pad in the V band), VIN (DC input, 2x2 jumper '
-    'bottom row and the VIN column), LED (R1-LED node), a<row>..f<row> (3- or 6-hole strips, rows numbered 1-38 from '
-    'the top). Copper lines reproduce the bus traces for the 3D view only; connectivity in a design still needs tracks. '
-    'Geometry from the vendor dimension drawing and CAD renders; DC input part positions +/-0.15 mm.',
-    'protosupplies psb-1 protoboard proto board', 'through_hole', items, -53, 53))
+# Geometry lives in tools/psb1_geometry.py (shared with gen_psb1.py, which lays the board itself out).
+# Four footprints: the full board as a carrier (bare, and with the DC-input kit's 3D models), the prototyping grid
+# alone (used by the layout, where the headers and kit parts are real footprints), and the two header blocks.
+import psb1_geometry as PG
+
+def psb1_items(grid=True, headers=True, kit_pads=True, outline=True, copper=True, courtyard=True):
+    items = []
+    def ppad(num, c, r, size=1.78, drill=1.02, shape='circle'):
+        x, y = PG.grid(c, r); items.append(pad_tht(num, x, y, size, drill, shape))
+    def pline(layer, w, pts):
+        for (c1, r1), (c2, r2) in zip(pts, pts[1:]):
+            x1, y1 = PG.grid(c1, r1); x2, y2 = PG.grid(c2, r2); items.append(fp_line(x1, y1, x2, y2, layer, w))
+    if grid:
+        for name, c, r, square in PG.grid_pads():
+            ppad(name, c, r, shape='rect' if square else 'circle')
+        if copper:
+            for layer, net, pts in PG.copper_runs():
+                pline(layer, 1.0 if net in ('G', 'VIN') or net.startswith('V') else 0.6, pts)
+            for layer, net, w, pts in PG.input_runs():
+                pline(layer, w, pts)
+    if headers:
+        c0, r0, n = PG.HEADER_2X20
+        for i in range(n):
+            ppad(f'H{2*i+1}', c0 + i, r0, shape='rect' if i == 0 else 'circle'); ppad(f'H{2*i+2}', c0 + i, r0 - 1)
+            ppad(f'H{2*i+1}', c0 + i, r0 + 1); ppad(f'H{2*i+2}', c0 + i, r0 + 2)
+        c0, r0, n = PG.HEADER_2X10
+        for i in range(n):
+            ppad(f'K{2*i+1}', c0 + i, r0, shape='rect' if i == 0 else 'circle'); ppad(f'K{2*i+2}', c0 + i + 0.5, r0 - 1)
+            ppad(f'K{2*i+1}', c0 + i, r0 + 2); ppad(f'K{2*i+2}', c0 + i + 0.5, r0 + 1)
+        if copper:
+            for layer, net, pts in PG.header_links():
+                pline(layer, 0.3, pts)
+        for c, lbl, r in ((2, '1', 1), (2, '2', 0), (23.2, '39', 1), (23.2, '40', 0)):
+            x, y = PG.grid(c, r); items.append(fp_text(lbl, x, y, 'F.SilkS', 0.7, 0.1))
+        x, y = PG.grid(3, 0); items.append(fp_rect(x - 1.27, y - 1.27, x + 19 * PG.P + 1.27, y + PG.P + 1.27, 'F.SilkS'))
+        x, y = PG.grid(25, 0); items.append(fp_rect(x - 1.27, y - 1.27, x + 9.5 * PG.P + 1.27, y + PG.P + 1.27, 'F.SilkS'))
+    if kit_pads:
+        for c, r in ((9, 26), (10, 26)):
+            ppad(PG.v_net_of_col(10), c, r, shape='rect')
+        for c, r in ((9, 27), (10, 27)):
+            ppad('VIN', c, r, shape='rect')
+        ppad('VIN', 0.75, 30.5, shape='rect'); ppad('G', 0.75, 29.5)                     # J1 JST XH: pin 1 (+) bottom
+        ppad('VIN', 4.0, 30.54, shape='rect'); ppad('G', 4.0, 29.74)                      # C1 100 uF, 2 mm pitch, + bottom
+        ppad('VIN', 6.0, 30.5); ppad('G', 6.0, 29.5)                                       # C2 100 nF
+        ppad('VIN', 7.5, 29.0); ppad('LED', 7.5, 33.0)                                     # R1 1 k
+        ppad('LED', 7.5, 35.0); ppad('G', 7.5, 36.0, shape='rect')                        # LED: anode top (fed by R1), cathode bottom
+        for num, c, r, rot in (('VIN', 4.28, 33.14, 0), ('G', 4.28, 35.62, 0), ('G', 6.17, 34.28, 90)):   # DC jack (GCT DCJ200 pattern)
+            x, y = PG.grid(c, r)
+            items.append(f'(pad "{num}" thru_hole oval (at {f(x)} {f(y)} {rot}) (size 3.5 2.0) (drill oval 3.0 1.0)'
+                         f' (layers "*.Cu" "*.Mask") (remove_unused_layers no) (uuid "{U()}"))')
+        for txt, c, r in (('J1', 1.7, 30), ('C1', 4, 31.4), ('C2', 6, 31.4), ('R1', 7.5, 34), ('LED', 7.5, 37.1), ('P1', 1.9, 35)):
+            x, y = PG.grid(c, r); items.append(fp_text(txt, x, y, 'F.SilkS', 0.7, 0.1))
+        x, y = PG.grid(2.5, 32.9); items.append(fp_rect(x, y, x + 9.0, 51.0, 'F.Fab', 0.1))
+    # silkscreen: bus boxes and labels, titles
+    for c, (r0, r1) in PG.V_COLS.items():
+        x0, y0 = PG.grid(c - 0.5, r0 - 0.5); x1, y1 = PG.grid(c + 1.5, r1 + 0.5)
+        items.append(fp_rect(x0, y0, x1, y1, 'F.SilkS'))
+        x, y = PG.grid(c, PG.V_BAND_ROW); items.append(fp_text('V', x, y, 'F.SilkS', 0.8, 0.12))
+        x, y = PG.grid(c, r1 + 1); items.append(fp_text('V', x, y, 'F.SilkS', 0.8, 0.12))
+        x, y = PG.grid(c + 1, r1 + 1); items.append(fp_text('G', x, y, 'F.SilkS', 0.8, 0.12))
+    for c in PG.FEED:
+        x, y = PG.grid(c - 1.5, PG.G_BAND_ROW); items.append(fp_text('G', x, y, 'F.SilkS', 0.8, 0.12))
+    x0, y0 = PG.grid(-0.5, PG.G_BAND_ROW - 0.5); x1, y1 = PG.grid(37.5, PG.G_BAND_ROW + 0.5)
+    items.append(fp_rect(x0, y0, x1, y1, 'F.SilkS'))
+    for txt, c, r, sz in (('VIN', 10, 38, 0.7), ('G', 11, 38, 0.7), ('V', 8, 26, 0.8), ('VIN', 8, 27, 0.8), ('PSB-1', 3.5, 25.3, 1.2),
+                          ('Proto Board', 3.5, 26.5, 1.2), ('Proto', 32.5, 35.3, 2.2), ('Supplies', 32.5, 37.0, 1.6)):
+        x, y = PG.grid(c, r); items.append(fp_text(txt, x, y, 'F.SilkS', sz, sz * 0.15))
+    if outline:
+        for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+            items.append(fp_rect(-51.0, -51.0, 51.0, 51.0, layer, w))
+        if courtyard:
+            items.append(fp_rect(-51.25, -51.25, 51.25, 51.25, 'F.CrtYd', 0.05))
+        for x in (-PG.MOUNT, PG.MOUNT):
+            for y in (-PG.MOUNT, PG.MOUNT):
+                items.append(pad_npth(x, y, PG.HOLE_D)); items.append(fp_circle(x, y, 3.0, 'F.Fab', 0.1))
+    items.append(fp_text('${REFERENCE}', 0, 48.5, 'F.Fab'))
+    return items
+
+PSB1_DESCR = ('ProtoSupplies PSB-1 MCU proto board with DC input: 102 x 102 mm FR-4, 3.5 mm holes on a 91.44 mm square, '
+              '2.54 mm grid of 1.02 mm plated holes with 1.78 mm pads. Pads are named by net: H1-H40 (2x20 header and its '
+              'breakout pads), K1-K20 (staggered 2x10 header), G (ground columns, band and DC-input ground), %s, VIN (DC input, '
+              '2x2 jumper bottom row, VIN column), LED (R1-LED node), a<row>..f<row> (3- or 6-hole strips, rows numbered 1-38 '
+              'from the top). Copper lines reproduce the bus traces for the 3D view only; a design still needs tracks. '
+              'Geometry from the vendor drawing, CAD renders and photos of the board.'
+              % ('V (all V bus columns)' if PG.V_COMMON else 'V1-V7 (the seven V bus columns left to right, each with its feed pad)'))
+write_fp('ProtoSupplies_PSB-1', footprint('ProtoSupplies_PSB-1', PSB1_DESCR + ' Bare board.',
+         'protosupplies psb-1 protoboard proto board', 'through_hole', psb1_items(), -53, 53))
+items = psb1_items()
+for ref, lib, fpname, (c, r), rot, value, symlib, sym, nets in PG.KIT:
+    x, y = PG.grid(c, r)
+    items.append(model(f'{PG.STOCK_3D}{lib}.3dshapes/{fpname}.step', offset=(x, -y, 0), rotate=(0, 0, -rot)))
+write_fp('ProtoSupplies_PSB-1_DCKit', footprint('ProtoSupplies_PSB-1_DCKit', PSB1_DESCR +
+         ' With the DC-input component kit fitted (3D models of the stock KiCad parts: GCT DCJ200 jack, JST XH, caps, 1 k, LED, 2x2 header).',
+         'protosupplies psb-1 protoboard proto board', 'through_hole', items, -53, 53))
+write_fp('ProtoSupplies_PSB-1_Grid', footprint('ProtoSupplies_PSB-1_Grid',
+         'Prototyping grid of the ProtoSupplies PSB-1 only (bus columns, bands, feed pads, strips, VIN column, silkscreen, '
+         'mounting holes): the piece of projects/psb-1 that is not a real component. Use ProtoSupplies_PSB-1 as a carrier instead.',
+         'protosupplies psb-1 protoboard grid', 'through_hole', psb1_items(headers=False, kit_pads=False, copper=False, courtyard=False), -53, 53))
+for name, spec, descr in (('PSB-1_Header_2x20_Breakout', (True, False), '2x20 header holes of the PSB-1 with the two rows of breakout pads below (odd pins to the first row, even pins to the second); pin 1 at the origin.'),
+                          ('PSB-1_Header_2x10_Staggered_Breakout', (False, True), 'Staggered 2x10 header of the PSB-1 (even pins and their breakout pads 1.27 mm to the right) with two breakout rows; pin 1 at the origin.')):
+    hdr = []
+    c0, r0, n = PG.HEADER_2X20 if spec[0] else PG.HEADER_2X10
+    ox, oy = PG.grid(c0, r0)
+    def hp(num, c, r, square=False):
+        x, y = PG.grid(c, r); hdr.append(pad_tht(num, x - ox, y - oy, 1.78, 1.02, 'rect' if square else 'circle'))
+    def hl(layer, w, c1, r1, c2, r2):
+        x1, y1 = PG.grid(c1, r1); x2, y2 = PG.grid(c2, r2); hdr.append(fp_line(x1 - ox, y1 - oy, x2 - ox, y2 - oy, layer, w))
+    for i in range(n):
+        dx = 0 if spec[0] else 0.5
+        hp(2 * i + 1, c0 + i, r0, i == 0); hp(2 * i + 2, c0 + i + dx, r0 - 1)
+        hp(2 * i + 1, c0 + i, r0 + (1 if spec[0] else 2)); hp(2 * i + 2, c0 + i + dx, r0 + (2 if spec[0] else 1))
+    x0, y0 = PG.grid(c0 - 0.5, r0 - 1.5); x1, y1 = PG.grid(c0 + n - 0.5 + (0 if spec[0] else 0.5), r0 + 0.5)
+    hdr.append(fp_rect(x0 - ox, y0 - oy, x1 - ox, y1 - oy, 'F.SilkS'))
+    hdr.append(fp_rect(x0 - ox - 0.3, y0 - oy - 0.3, x1 - ox + 0.3, PG.grid(0, r0 + 2.5)[1] - oy, 'F.CrtYd', 0.05))
+    hdr.append(fp_text('${REFERENCE}', (x0 + x1) / 2 - ox, PG.grid(0, r0 + 0.5)[1] - oy, 'F.Fab', 0.8, 0.12))
+    write_fp(name, footprint(name, descr, 'protosupplies psb-1 header breakout', 'through_hole', hdr, -5.5, 8.0))
 
 # --- Optocouplers with logic output (stock DIP footprints and 3D models) -----
 def opto_symbol(name, ref, anode, cathode, vcc, vo, gnd, ncs, footprint, datasheet, desc, keywords, fp_filters):

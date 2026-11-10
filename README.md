@@ -36,7 +36,8 @@ it under CC-BY-SA 4.0 with the KiCad library exception: designs made with it are
 | Toshiba TLP2962 15 MBd photocoupler | `TLP2962` | stock `Package_DIP:DIP-8_W7.62mm` | stock | Toshiba drawing (exact) |
 | **Prototyping boards** | | | | |
 | ElectroCookie full-size solderable breadboard PCB | (mechanical) | `ElectroCookie_Breadboard_Full` | | vendor drawing (exact), rails from photos |
-| ProtoSupplies PSB-1 MCU proto board with DC input | (mechanical) | `ProtoSupplies_PSB-1` | | vendor drawing + CAD renders |
+| ProtoSupplies PSB-1 MCU proto board with DC input | (mechanical) | `ProtoSupplies_PSB-1`, `ProtoSupplies_PSB-1_DCKit` | board STEP (bare / with kit); the DCKit carrier shows the kit parts | vendor drawing, CAD renders, the board itself |
+| PSB-1 pieces used to redraw the board | | `ProtoSupplies_PSB-1_Grid`, `PSB-1_Header_2x20_Breakout`, `PSB-1_Header_2x10_Staggered_Breakout` | | same |
 
 Also included: silkscreen logo footprints in two sizes each (`Logo_TBD_*`, `Logo_Star_*`), filled polygons on F.SilkS
 with no pads, made by `tools/gen_logos.py` from a PNG. Point the script at your own artwork to make more.
@@ -80,8 +81,8 @@ Not using a path variable? Add the libraries by absolute path and run a find-and
 Exact means the geometry comes from vendor CAD, a dimensioned drawing or a STEP file; those parts are safe to drill from.
 Items measured from photos (GC9A01 outline and holes, KY-040 board size, RP2040-Zero back pads, ElectroCookie rail
 length, the PSB-1 input-section component positions) are close but should be checked with calipers before a panel is
-cut. The PSB-1 footprint keeps its seven V bus columns as separate nets because the vendor renders show them as
-separate copper; measure your board and set `PSB_V_COMMON = True` in `tools/gen_lib.py` if they are joined.
+cut. The PSB-1 footprints keep the seven V bus columns as separate nets because the vendor renders show them as
+separate copper; measure your board and set `V_COMMON = True` in `tools/psb1_geometry.py` if they are joined.
 
 If you find an error, open an issue with a measurement or a drawing and it gets fixed in the generator.
 
@@ -91,6 +92,9 @@ If you find an error, open an issue with a measurement or a drawing and it gets 
   board. The PCB is a build guide rather than a fab file: sockets, modules and every jumper wire routed hole-to-hole and
   rendered as 22 AWG wire in the 3D viewer, with a wiring map (`WIRING.md`) and cut list (`WIRES.md`).
 - **`projects/parts-preview`**: the board in the picture above, every other part placed for a look in the 3D viewer.
+- **`projects/psb-1`**: the ProtoSupplies PSB-1 itself redrawn in KiCad: schematic of the DC-input section and headers,
+  the full layout with every bus, strip and breakout trace, and two board files, `psb-1.kicad_pcb` with the component
+  kit fitted and `psb-1-bare.kicad_pcb` as sold. `lib/3d/ProtoSupplies_PSB-1*.step` are exported from them.
 
 ![teensy-panel in the 3D viewer](docs/images/teensy-panel.png)
 
@@ -103,7 +107,7 @@ lib/3d/                   VRML + STEP bodies            <- tools/build_models.py
 lib/vendor/               upstream files the generator reads, with their licences
 artwork/                  logo sources and logos.json
 docs/components.md        part reference and dimension sources
-projects/                 example projects              <- tools/gen_teensy_panel.py, tools/gen_parts_preview.py
+projects/                 example projects              <- tools/gen_teensy_panel.py, gen_parts_preview.py, gen_psb1.py
 tools/                    the generators (Python 3, KiCad's pcbnew module for the projects, FreeCAD for the models)
 ```
 
@@ -113,6 +117,7 @@ freecad.cmd tools/build_models.py               # 3D bodies (run from a path Fre
 python3 tools/gen_logos.py artwork/logos.json   # logo footprints (needs potrace)
 python3 tools/gen_teensy_panel.py               # projects/teensy-panel
 python3 tools/gen_parts_preview.py              # projects/parts-preview
+python3 tools/gen_psb1.py                       # projects/psb-1 (geometry shared with gen_lib.py in tools/psb1_geometry.py)
 python3 -I tools/eagle_dump.py <board.brd>      # pads, outline and nets of an EagleCAD board, for new parts
 ```
 
