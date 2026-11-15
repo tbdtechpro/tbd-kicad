@@ -55,3 +55,11 @@ PARTS = [
 ]
 SOCKET_NETS = {'IN': {'4': 'IN_4', '5': 'IN_K', '2': None}, 'OUT': {'4': 'OUT_4', '5': 'OUT_5', '2': 'GND'},
                'THRU': {'4': 'THRU_4', '5': 'THRU_5', '2': 'GND'}}
+
+# Same Sky (CUI) SDS-50J DIN-5 180-degree right-angle receptacle, from the SDS-J datasheet (09/12/2024), same frame as
+# DIN (pin 2 at the origin, opening toward -Y): signal row 1-2-3 at 7.5 mm, pair 4/5 10 mm apart 2.5 mm further back,
+# two 2.4 mm mounting lugs 5 mm toward the face, two ground pins (E) 10 mm toward the face, face 12.5 mm ahead of the
+# pin row; housing 20.0 wide x 21.1 tall flange (18.0 body), 15.8 deep including the 1.8 mm flange.
+SDS50J = {'pins': {'2': (0.0, 0.0), '1': (-7.5, 0.0), '3': (7.5, 0.0), '4': (-5.0, 2.5), '5': (5.0, 2.5)},
+          'ground': ((-2.5, -10.0), (2.5, -10.0)), 'lugs': ((-7.5, -5.0), (7.5, -5.0)), 'lug_drill': 2.4, 'pin_drill': 1.3,
+          'body_w': 20.0, 'body_d': 15.8, 'body_h': 21.1, 'face_from_pin2': -12.5, 'overhang': 0.0}

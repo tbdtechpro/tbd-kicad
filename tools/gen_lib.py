@@ -1086,6 +1086,61 @@ write_fp('SW_Push_6x6mm_2pin_P5.08mm', footprint(
     '10-pack). Leads drawn on the centre line; the body may sit offset on the real part.',
     'tactile pushbutton momentary 6mm 2 pin', 'through_hole', items, -5, 5))
 
+# --- Mouser order 282968441 (2026-11-13): parts without a stock KiCad footprint ------------------------------------
+# Same Sky SDS-50J DIN-5 socket, exact from the datasheet (geometry in midi_geometry.SDS50J, same frame as the shield socket)
+items = []
+SJ = MG.SDS50J
+for num, (x, y) in SJ['pins'].items():
+    items.append(pad_tht(num, x, y, 2.0, SJ['pin_drill'], 'rect' if num == '1' else 'circle'))
+for x, y in SJ['ground']:
+    items.append(f'(pad "" thru_hole circle (at {f(x)} {f(y)}) (size 2.0 2.0) (drill {f(SJ["pin_drill"])}) (layers "*.Cu" "*.Mask") (remove_unused_layers no) (uuid "{U()}"))')
+for x, y in SJ['lugs']:
+    items.append(f'(pad "" thru_hole circle (at {f(x)} {f(y)}) (size 3.6 3.6) (drill {f(SJ["lug_drill"])}) (layers "*.Cu" "*.Mask") (remove_unused_layers no) (uuid "{U()}"))')
+bw, bd, face = SJ['body_w'], SJ['body_d'], SJ['face_from_pin2']
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-bw / 2, face, bw / 2, face + bd, layer, w))
+items.append(fp_rect(-bw / 2 - 0.25, face - 0.25, bw / 2 + 0.25, face + bd + 0.25, 'F.CrtYd', 0.05))
+items.append(fp_text('opening', 0, face - 1.5, 'F.Fab', 0.7, 0.1)); items.append(fp_text('${REFERENCE}', 0, face + bd / 2, 'F.Fab', 0.8, 0.12))
+items.append(model(MODEL + 'DIN-5_SDS-50J.wrl'))                                         # converted by tools/convert_din5_vrml.py
+write_fp('DIN-5_180deg_SameSky_SDS-50J', footprint(
+    'DIN-5_180deg_SameSky_SDS-50J',
+    'Same Sky (CUI Devices) SDS-50J 5-pin 180-degree DIN receptacle, right angle, pin 2 at the origin and the opening '
+    'toward -Y: pins 1/3 at +/-7.5 mm, 4/5 at +/-5 mm 2.5 mm back, two 2.4 mm mounting lugs 5 mm and two ground pins (E) '
+    '10 mm toward the face, face 12.5 mm ahead of the pin row, 20 x 21.1 x 15.8 mm housing. SDS-J datasheet 09/12/2024.',
+    'din-5 midi socket same sky cui sds-50j', 'through_hole', items, face - 2, face + bd + 2))
+
+# CUI UJ2-AH-4-TH USB 2.0 type A receptacle, horizontal through-hole (pattern from the vendor data: pins at 0, 2.5,
+# 4.5, 7.0 mm, shell pegs 2.67 mm ahead on a 10 mm pitch, shell 13 wide x 15.3 deep opening toward -Y)
+items = []
+for num, x in (('1', 0.0), ('2', 2.5), ('3', 4.5), ('4', 7.0)):
+    items.append(pad_tht(num, x, 0, 1.5, 0.9, 'rect' if num == '1' else 'circle'))
+for x in (-1.5, 8.5):
+    items.append(f'(pad "5" thru_hole circle (at {f(x)} -2.67) (size 3.45 3.45) (drill 2.3) (layers "*.Cu" "*.Mask") (remove_unused_layers no) (uuid "{U()}"))')
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-3.0, -12.57, 10.0, 2.7, layer, w))
+items.append(fp_rect(-3.25, -12.82, 10.25, 2.95, 'F.CrtYd', 0.05))
+items.append(fp_text('USB A', 3.5, -8.5, 'F.Fab', 0.8, 0.12)); items.append(fp_text('${REFERENCE}', 3.5, -5.0, 'F.Fab', 0.8, 0.12))
+items.append(model(MODEL + 'USB_A_UJ2-AH-4-TH.wrl'))                                     # built by tools/build_models.py
+write_fp('USB_A_CUI_UJ2-AH-4-TH_Horizontal', footprint(
+    'USB_A_CUI_UJ2-AH-4-TH_Horizontal',
+    'CUI Devices UJ2-AH-4-TH USB 2.0 type A receptacle, horizontal through-hole: pins 1 VBUS, 2 D-, 3 D+, 4 GND on a '
+    '2.5/2.0/2.5 mm pattern, two 2.3 mm shell pegs (pad 5) 2.67 mm ahead on a 10 mm pitch, shell 13 x 15.3 mm opening '
+    'toward -Y. Pattern from the vendor PCB data; shell height drawn as 6.4 mm.',
+    'usb a receptacle cui uj2-ah-4-th', 'through_hole', items, -14, 4.5))
+
+# Fair-Rite 2743001112 bead on lead (43 material, 3.5 mm dia x 4.45 mm long on 22 AWG wire), axial on 7.62 mm
+items = [pad_tht(1, 0, 0, 1.8, 0.9, 'rect'), pad_tht(2, 7.62, 0, 1.8, 0.9)]
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(3.81 - 2.225, -1.75, 3.81 + 2.225, 1.75, layer, w))
+items.append(fp_line(1.0, 0, 3.81 - 2.225, 0, 'F.SilkS', 0.12)); items.append(fp_line(3.81 + 2.225, 0, 6.62, 0, 'F.SilkS', 0.12))
+items.append(fp_rect(-1.2, -2.0, 8.82, 2.0, 'F.CrtYd', 0.05)); items.append(fp_text('${REFERENCE}', 3.81, -2.8, 'F.Fab', 0.7, 0.1))
+items.append(model(MODEL + 'FerriteBead_2743001112.wrl'))                                # built by tools/build_models.py
+write_fp('FerriteBead_Axial_L4.45mm_D3.5mm_P7.62mm', footprint(
+    'FerriteBead_Axial_L4.45mm_D3.5mm_P7.62mm',
+    'Fair-Rite 2743001112 bead on lead (43 material, 68 ohm at 100 MHz): 3.5 mm dia x 4.45 mm bead on 22 AWG tinned '
+    'wire, mounted axially on 7.62 mm. Bead dimensions from the Fair-Rite data sheet.',
+    'ferrite bead on lead axial fair-rite', 'through_hole', items, -3.5, 3.5))
+
 # --- M3 hex standoff, 6 mm (mechanical, used to stand boards off in the parts preview) ----------------------------
 items = [pad_npth(0, 0, 3.2), fp_circle(0, 0, 3.0, 'F.Fab', 0.1), fp_circle(0, 0, 3.3, 'F.CrtYd', 0.05),
          fp_text('${REFERENCE}', 0, -4.5, 'F.Fab', 0.6, 0.1), model(MODEL + 'Standoff_M3_H6mm.wrl')]

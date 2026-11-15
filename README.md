@@ -39,6 +39,9 @@ it under CC-BY-SA 4.0 with the KiCad library exception: designs made with it are
 | Teansic USB-C female breakout, 16-pin receptacle, 6-pin header | `USB-C_Breakout_16P_6pin` | same | VRML + STEP | listing size, photos |
 | **Connectors and switches** | | | | |
 | DIN-5 180° PCB socket (as on the MIDI shield) | stock `Connector:DIN-5_180degree` | `DIN-5_180deg_PCB_Socket` | VRML + STEP (converted CAD model) | pin spacing by calipers, lugs from photos |
+| Same Sky (CUI) SDS-50J DIN-5 180° receptacle | stock `Connector:DIN-5_180degree` | `DIN-5_180deg_SameSky_SDS-50J` | VRML + STEP (converted CAD model) | SDS-J datasheet (exact) |
+| CUI UJ2-AH-4-TH USB 2.0 type A receptacle, horizontal | stock `Connector:USB_A` | `USB_A_CUI_UJ2-AH-4-TH_Horizontal` | VRML + STEP | vendor PCB pattern (exact), shell height nominal |
+| Fair-Rite 2743001112 bead on lead, axial 7.62 mm | stock `Device:FerriteBead` | `FerriteBead_Axial_L4.45mm_D3.5mm_P7.62mm` | VRML + STEP | Fair-Rite data sheet (exact) |
 | SPDT slide switch, 2.5 mm pitch with lugs (as on the MIDI shield) | stock `Switch:SW_SPDT` | `SW_Slide_SPDT_P2.5mm_Lugs` | VRML + STEP | pitch and lugs from photos |
 | Miniature 6 x 6 mm tactile pushbutton, 2 leads on 5.08 mm (ProtoSupplies 10-pack) | stock `Switch:SW_Push` | `SW_Push_6x6mm_2pin_P5.08mm` | VRML + STEP | listing dimensions |
 | **Optocouplers** | | | | |
@@ -46,6 +49,15 @@ it under CC-BY-SA 4.0 with the KiCad library exception: designs made with it are
 | Toshiba TLP2962 15 MBd photocoupler | `TLP2962` | stock `Package_DIP:DIP-8_W7.62mm` | stock | Toshiba drawing (exact) |
 | **Covered by stock KiCad** | | | | |
 | APMemory APS6404L / ESP-PSRAM64H 8 MB QSPI PSRAM (Teensy 4.1 add-on) | stock `Memory_RAM:APS6404L-SQRx-SN` | stock `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | stock | datasheet (SOP-8 150 mil) |
+| TI SN74AHCT125N quad bus buffer | stock `74xx:74AHCT125` | stock `Package_DIP:DIP-14_W7.62mm` | stock | datasheet |
+| onsemi H11L1M Schmitt-trigger optocoupler | stock `Isolator:H11L1` | stock `Package_DIP:DIP-6_W7.62mm` | stock | datasheet |
+| Recom R-78E5.0-0.5 switching regulator, SIP-3 | stock `Regulator_Switching:R-78E5.0-0.5` | stock `Converter_DCDC:Converter_DCDC_RECOM_R-78E-0.5_THT` | stock | datasheet |
+| Same Sky SJ1-3523N 3.5 mm stereo jack | stock `Connector_Audio:AudioJack3` | stock `Connector_Audio:Jack_3.5mm_CUI_SJ1-3523N_Horizontal` | stock | datasheet |
+| TE 2485264-2 (14) and 1-2199298-1 (6) DIP sockets | (with the IC) | stock `Package_DIP:DIP-14_W7.62mm_Socket`, `DIP-6_W7.62mm_Socket` | stock | TE drawings |
+| Lite-On LTL-4221N / LTL-4231N 3 mm LEDs | stock `Device:LED` | stock `LED_THT:LED_D3.0mm` | stock | datasheet (T-1) |
+| Yageo MFR-25 1/4 W metal film resistors | stock `Device:R` | stock `Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal` | stock | |
+| Vishay K104K15X7RF5TL2 0.1 µF 2.5 mm MLCC | stock `Device:C` | stock `Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm` | stock | K series datasheet |
+| Würth 61304011121 / 61302011821 headers, Samtec SSW-122-01-T-S socket | stock `Connector_Generic:Conn_01xNN` | stock `PinHeader_1x40`, `PinSocket_1x20`, `PinSocket_1x22` | stock | datasheets |
 | **Prototyping boards** | | | | |
 | ElectroCookie full-size solderable breadboard PCB | (mechanical) | `ElectroCookie_Breadboard_Full` | | vendor drawing (exact), rails from photos |
 | ProtoSupplies PSB-1 MCU proto board with DC input | (mechanical) | `ProtoSupplies_PSB-1`, `ProtoSupplies_PSB-1_DCKit` | board STEP (bare / with kit); the DCKit carrier shows the kit parts | vendor drawing, CAD renders, the board itself |

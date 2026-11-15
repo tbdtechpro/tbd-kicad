@@ -91,6 +91,9 @@ oled = add(LIB, 'OLED_1.5in_SH1107_128x128_I2C', 'DS2'); centre_at(oled, 270, 11
 for name, ref, x in (('TRRS_3.5mm_Jack_Breakout', 'J2', 18), ('WS2812_RGB_LED_Module', 'D1', 38), ('MicroSD_Card_Module_SPI_3V3', 'J3', 61),
                      ('USB-C_Breakout_16P_6pin', 'J4', 87), ('SW_Push_6x6mm_2pin_P5.08mm', 'SW1', 103)):
     centre_at(add(LIB, name, ref), x, 137)
+sds = add(LIB, 'DIN-5_180deg_SameSky_SDS-50J', 'J5', 180); centre_at(sds, 182, 112)        # opening toward +Y (the board edge)
+usb = add(LIB, 'USB_A_CUI_UJ2-AH-4-TH_Horizontal', 'J6', 180); centre_at(usb, 182, 136)
+fb = add(LIB, 'FerriteBead_Axial_L4.45mm_D3.5mm_P7.62mm', 'FB1'); centre_at(fb, 255, 145)
 uno = add(LIB, 'MIDI_Shield_K194725ASJH', 'A2'); centre_at(uno, 158, 100)
 logo = add(LIB, 'Logo_TBD_Full_40mm', 'G1'); centre_at(logo, 222, 18)
 star = add(LIB, 'Logo_Star_10mm', 'G2'); centre_at(star, 282, 143)

@@ -16,6 +16,9 @@ dimension and what is still unverified. Regenerate the library with `python3 too
 | ProtoSupplies MicroSD module | `MicroSD_Card_Module_SPI_3V3` | same + VRML/STEP | PCB size from the listing, header and holes from photos |
 | Teansic USB-C breakout | `USB-C_Breakout_16P_6pin` | same + VRML/STEP | PCB size from the listing, header, holes and receptacle from photos |
 | 6 mm 2-lead tactile pushbutton | stock `Switch:SW_Push` | `SW_Push_6x6mm_2pin_P5.08mm` + VRML/STEP | body and lead spacing from the listing |
+| Same Sky SDS-50J DIN-5 receptacle | stock `Connector:DIN-5_180degree` | `DIN-5_180deg_SameSky_SDS-50J` + VRML/STEP | exact (SDS-J datasheet) |
+| CUI UJ2-AH-4-TH USB-A receptacle | stock `Connector:USB_A` | `USB_A_CUI_UJ2-AH-4-TH_Horizontal` + VRML/STEP | pattern exact (vendor data), shell height nominal |
+| Fair-Rite 2743001112 bead on lead | stock `Device:FerriteBead` | `FerriteBead_Axial_L4.45mm_D3.5mm_P7.62mm` + VRML/STEP | exact (data sheet) |
 | APS6404L 8 MB PSRAM | stock `Memory_RAM:APS6404L-SQRx-SN` | stock `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | datasheet |
 | RP2040-Zero form factor | `RP2040-Zero` | `RP2040-Zero` | edge pins exact (Waveshare drawing), back pads approximate |
 | ESP32-S3-DevKitC-1 | `ESP32-S3-DevKitC-1` | `ESP32-S3-DevKitC-1` | exact (Espressif library, CC-BY-SA 4.0) |
@@ -190,6 +193,24 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
   on the real part); use the stock `Switch:SW_Push` symbol.
 - The 8 MB PSRAM for the Teensy 4.1 (APS6404L-3SQR-SN / ESP-PSRAM64H) needs no library part: KiCad ships the
   `Memory_RAM:APS6404L-SQRx-SN` symbol and the SOP-8 150 mil footprint; the datasheet is in the private repo.
+
+## Mouser order 282968441 (2026-11-13)
+
+- `DIN-5_180deg_SameSky_SDS-50J`: the Same Sky (CUI Devices) SDS-50J, exact from the SDS-J datasheet: pins 1/3 at
+  +/-7.5 mm with pin 2 at the origin, 4/5 at +/-5 mm 2.5 mm further from the face, two 2.4 mm mounting lugs 5 mm and two
+  ground pins 10 mm toward the face (unnumbered pads), face 12.5 mm ahead of the pin row, housing 20 x 21.1 x 15.8 mm.
+  The 3D model is the same converted CAD socket as the shield's, scaled to these dimensions
+  (`tools/convert_din5_vrml.py`). It is not the socket on the K194725ASJH shield, whose lugs sit differently.
+- `USB_A_CUI_UJ2-AH-4-TH_Horizontal`: pins 1 VBUS, 2 D-, 3 D+, 4 GND at 0 / 2.5 / 4.5 / 7.0 mm, shell pegs (pad 5)
+  2.3 mm holes 2.67 mm ahead on a 10 mm pitch, shell 13 x 15.3 mm opening toward -Y; the pattern comes from the
+  vendor's PCB data, the 6.4 mm shell height is nominal.
+- `FerriteBead_Axial_L4.45mm_D3.5mm_P7.62mm`: the Fair-Rite 2743001112 bead (3.5 x 4.45 mm on 22 AWG wire) laid
+  axially on 7.62 mm; use `Device:FerriteBead`.
+- Everything else on the order is covered by KiCad's own libraries (see the README table): SN74AHCT125N, H11L1M,
+  TLP2962 (this library's symbol), R-78E5.0-0.5, SJ1-3523N, the TE DIP sockets, Lite-On 3 mm LEDs, MFR-25 resistors,
+  the Vishay K-series 0.1 uF, Würth 2.54 mm headers and the Samtec SSW-122 socket strip. Datasheets, the order
+  spreadsheet and the vendor library downloads (SamacSys terms: usable in designs, not redistributable) are in the
+  private repo.
 
 ## ElectroCookie full-size breadboard PCB
 

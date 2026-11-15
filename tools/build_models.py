@@ -676,6 +676,32 @@ def rp2350b_plus_w():
     return g
 
 
+def usb_a_uj2():
+    """CUI UJ2-AH-4-TH USB-A receptacle: 13 x 15.3 x 6.4 mm steel shell open toward 3D +Y (fp -Y), white tongue inside,
+    four pins on the 2.5/2.0/2.5 pattern and two shell pegs 2.67 mm ahead of them."""
+    g = []
+    x0, x1 = -3.0, 10.0; y_back, y_face = -2.7, 12.57                                           # 3D y = -fp y
+    shell = box(x0, x1, y_back, y_face, 0.2, 6.6).cut(box(x0 + 0.4, x1 - 0.4, y_back + 0.4, y_face + 0.1, 0.6, 6.2))
+    g.append((shell, SILVER))
+    g.append((box(x0 + 1.0, x1 - 1.0, y_back + 0.4, y_face - 1.0, 2.2, 4.0), WHITE))             # tongue
+    for x in (0.0, 2.5, 4.5, 7.0):
+        g.append((box(x - 0.3, x + 0.3, -0.3, 0.3, -3.0, 0.4), GOLD))
+    for x in (-1.5, 8.5):
+        g.append((box(x - 0.6, x + 0.6, 2.67 - 0.6, 2.67 + 0.6, -3.0, 0.4), SILVER))
+    return g
+
+
+def ferrite_bead_axial():
+    """Fair-Rite 2743001112 bead on lead, horizontal on 7.62 mm: 3.5 mm dia x 4.45 mm bead on a 0.64 mm wire."""
+    g = []
+    r = 1.75
+    g.append((cyl(r, 4.45, (3.81 - 2.225, 0, r), (1, 0, 0)), DARK))
+    g.append((cyl(0.32, 7.62, (0, 0, r), (1, 0, 0)), SILVER))
+    for x in (0.0, 7.62):
+        g.append((cyl(0.32, r + 3.0, (x, 0, -3.0)), SILVER))
+    return g
+
+
 def standoff_m3_6mm():
     """Brass hex standoff, 5.5 mm across flats, 6 mm high, with an M3 screw head on top (preview hardware)."""
     pts = [Vector(3.18 * math.cos(math.radians(60 * k + 30)), 3.18 * math.sin(math.radians(60 * k + 30)), 0) for k in range(6)]
@@ -706,7 +732,7 @@ for name, builder, step in (('KY-040_Module', ky040, True), ('GC9A01_Round_1.28i
                             ('TRRS_Jack_Breakout', trrs_breakout, True), ('WS2812_LED_Module', ws2812_module, True),
                             ('MicroSD_Card_Module', microsd_module, True), ('USB-C_Breakout', usbc_breakout, True), ('SW_Push_6mm_2pin', push_6mm_2pin, True),
                             ('RP2350B-Plus-W', rp2350b_plus_w, True),
-                            ('Standoff_M3_H6mm', standoff_m3_6mm, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
+                            ('Standoff_M3_H6mm', standoff_m3_6mm, True), ('USB_A_UJ2-AH-4-TH', usb_a_uj2, True), ('FerriteBead_2743001112', ferrite_bead_axial, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
     if os.environ.get('BUILD_ONLY') and name not in os.environ['BUILD_ONLY'].split(','):
         continue
     g = builder()
