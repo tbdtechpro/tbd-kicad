@@ -1141,6 +1141,74 @@ write_fp('FerriteBead_Axial_L4.45mm_D3.5mm_P7.62mm', footprint(
     'wire, mounted axially on 7.62 mm. Bead dimensions from the Fair-Rite data sheet.',
     'ferrite bead on lead axial fair-rite', 'through_hole', items, -3.5, 3.5))
 
+# --- TBD100x100t Eurorack test-bench power distribution board (2020 DipTrace design): parts without stock footprints
+# Cal Test CT3151V1 4 mm sheathed safety banana jack, vertical PCB mount: four 1.6 mm holes on a diamond 2.38 mm from
+# the centre (drawing CT3151 rev K sheet 3), body 11.5 mm dia, 13.4 mm flange, 19 mm tall
+items = [pad_tht(1, 2.38, 0, 2.4, 1.6, 'rect'), pad_tht(1, -2.38, 0, 2.4, 1.6), pad_tht(1, 0, 2.38, 2.4, 1.6), pad_tht(1, 0, -2.38, 2.4, 1.6),
+         fp_circle(0, 0, 5.75, 'F.Fab', 0.1), fp_circle(0, 0, 6.7, 'F.Fab', 0.1), fp_circle(0, 0, 6.85, 'F.SilkS', 0.12), fp_circle(0, 0, 7.0, 'F.CrtYd', 0.05),
+         fp_text('${REFERENCE}', 0, -8.3, 'F.Fab', 0.8, 0.12), model(MODEL + 'Banana_CalTest_CT3151V1.wrl')]
+write_fp('Banana_CalTest_CT3151V1_Vertical', footprint(
+    'Banana_CalTest_CT3151V1_Vertical',
+    'Cal Test CT3151V1-x 4 mm sheathed (safety) banana jack, vertical PCB mount, 25 A / 1 kV CAT III: four 1.6 mm '
+    'solder pins on a diamond 2.38 mm from the centre (all one net), 11.5 mm body with a 13.4 mm flange, 19 mm above '
+    'the board. Colour by suffix (-0 black, -2 red, -4 yellow, -6 blue). Cal Test drawing CT3151 rev K.',
+    'banana jack 4mm safety cal test vertical', 'through_hole', items, -8.3, 8.3))
+
+# Johnson / Cinch 105-075x-001 tip jack for 2 mm (.080") probes, horizontal PCB mount: two pins on 10.16 mm (the
+# pattern of the 2020 board; the vendor drawing is only available on request), body 10.5 x 4.0 x 5.2 mm
+items = [pad_tht(1, 0, 0, 2.2, 1.4, 'rect'), pad_tht(1, 10.16, 0, 2.2, 1.4)]
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-0.2, -2.0, 10.3, 2.0, layer, w))
+items.append(fp_circle(-0.2, 0, 1.0, 'F.Fab', 0.1))
+items += [fp_rect(-0.45, -2.25, 10.55, 2.25, 'F.CrtYd', 0.05), fp_text('${REFERENCE}', 5.08, -3.0, 'F.Fab', 0.7, 0.1), model(MODEL + 'TipJack_Johnson_105-075x.wrl')]
+write_fp('TipJack_Johnson_105-075x_Horizontal_P10.16mm', footprint(
+    'TipJack_Johnson_105-075x_Horizontal_P10.16mm',
+    'Cinch / Johnson 105-075x-001 insulated tip jack for 2 mm (0.080 in) test probes, horizontal PCB mount, 5 A: two '
+    'solder pins on 10.16 mm (both pad 1), body 10.5 x 4.0 x 5.2 mm with the opening at the pin-1 end. Pin spacing '
+    'follows the TBD100x100t board; Cinch supplies the drawing on request, so verify before use.',
+    'tip jack test probe johnson cinch', 'through_hole', items, -3.5, 3.5))
+
+# Bourns MF-R110 radial PPTC: 5.1 mm lead spacing, 0.51 mm leads, 8.9 x 14 mm disc 3 mm thick (MF-R datasheet style 1)
+items = [pad_tht(1, -2.55, 0, 1.6, 0.9, 'rect'), pad_tht(2, 2.55, 0, 1.6, 0.9)]
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-4.45, -1.5, 4.45, 1.5, layer, w))
+items += [fp_rect(-4.7, -1.75, 4.7, 1.75, 'F.CrtYd', 0.05), fp_text('${REFERENCE}', 0, -2.6, 'F.Fab', 0.7, 0.1), model(MODEL + 'Fuse_Bourns_MF-R110.wrl')]
+write_fp('Fuse_Bourns_MF-R110', footprint(
+    'Fuse_Bourns_MF-R110',
+    'Bourns MF-R110 radial PTC resettable fuse (1.1 A hold, 30 V): leads 0.51 mm on 5.1 mm, disc 8.9 mm wide, '
+    '14 mm tall, 3 mm thick standing above the pads. MF-R series datasheet, style 1.',
+    'pptc polyfuse resettable bourns mf-r', 'through_hole', items, -3.5, 3.5))
+
+# API Delevan 4211R-29 axial ferrite bead (228 ohm at 25 MHz): 3.5 mm dia x 13.84 mm body on 0.8 mm leads, laid
+# horizontally on 20.32 mm (the 2020 board used 27.84 mm)
+items = [pad_tht(1, 0, 0, 1.8, 1.0, 'rect'), pad_tht(2, 20.32, 0, 1.8, 1.0)]
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(10.16 - 6.92, -1.75, 10.16 + 6.92, 1.75, layer, w))
+items += [fp_line(1.1, 0, 10.16 - 6.92, 0, 'F.SilkS', 0.12), fp_line(10.16 + 6.92, 0, 19.2, 0, 'F.SilkS', 0.12),
+          fp_rect(-1.2, -2.0, 21.52, 2.0, 'F.CrtYd', 0.05), fp_text('${REFERENCE}', 10.16, -2.8, 'F.Fab', 0.7, 0.1), model(MODEL + 'FerriteBead_Delevan_4211R.wrl')]
+write_fp('FerriteBead_Axial_L13.84mm_D3.5mm_P20.32mm', footprint(
+    'FerriteBead_Axial_L13.84mm_D3.5mm_P20.32mm',
+    'API Delevan 4211R-29 axial ferrite bead, 228 ohm at 25 MHz: 3.51 mm dia x 13.84 mm body on 0.8 mm leads, '
+    'horizontal on 20.32 mm. Body size from the distributor listing (the Delevan drawing was not reachable).',
+    'ferrite bead axial delevan 4211r', 'through_hole', items, -3.5, 3.5))
+
+# Same Sky (CUI) TB001-500-04 screw terminal block, 4 poles on 5.0 mm (TB001-500 datasheet): 1.3 mm holes, pin 1 at
+# the origin, body 20 x 9 x 12.5 mm with the pins 5 mm from the back and the wire entry toward +Y
+items = []
+for i in range(4):
+    items.append(pad_tht(i + 1, 5.0 * i, 0, 2.2, 1.3, 'rect' if i == 0 else 'circle'))
+for layer, w in (('F.Fab', 0.1), ('F.SilkS', 0.12)):
+    items.append(fp_rect(-2.5, -5.0, 17.5, 4.0, layer, w))
+for i in range(4):
+    items.append(fp_circle(5.0 * i, -1.0, 1.6, 'F.Fab', 0.1))                              # screw heads
+items += [fp_rect(-2.75, -5.25, 17.75, 4.25, 'F.CrtYd', 0.05), fp_text('${REFERENCE}', 7.5, -6.2, 'F.Fab', 0.8, 0.12), model(MODEL + 'TerminalBlock_TB001-500-04.wrl')]
+write_fp('TerminalBlock_SameSky_TB001-500-04_1x04_P5.00mm', footprint(
+    'TerminalBlock_SameSky_TB001-500-04_1x04_P5.00mm',
+    'Same Sky (CUI Devices) TB001-500-04 4-pole screw terminal block, 5.0 mm pitch, 22-12 AWG, M3 screws: 1.0 mm pins '
+    'in 1.3 mm holes, pin 1 at the origin, 20 x 9 mm body 12.5 mm tall, pins 5 mm from the back edge, wire entry '
+    'toward +Y. TB001-500 datasheet 09/12/2024; -04BE is the blue one.',
+    'terminal block screw 5mm cui same sky tb001', 'through_hole', items, -6.5, 5.5))
+
 # --- M3 hex standoff, 6 mm (mechanical, used to stand boards off in the parts preview) ----------------------------
 items = [pad_npth(0, 0, 3.2), fp_circle(0, 0, 3.0, 'F.Fab', 0.1), fp_circle(0, 0, 3.3, 'F.CrtYd', 0.05),
          fp_text('${REFERENCE}', 0, -4.5, 'F.Fab', 0.6, 0.1), model(MODEL + 'Standoff_M3_H6mm.wrl')]

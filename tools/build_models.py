@@ -702,6 +702,69 @@ def ferrite_bead_axial():
     return g
 
 
+def banana_ct3151v1():
+    """Cal Test CT3151V1 vertical safety banana jack: 11.5 mm body with a 13.4 mm top flange, 19 mm tall, 4 mm bore,
+    four pins on the diamond."""
+    g = []
+    body = cyl(5.75, 15.8, (0, 0, 0.2)).fuse(cyl(6.7, 3.2, (0, 0, 15.8))).cut(cyl(2.0, 16.0, (0, 0, 3.5)))
+    g.append((body, BLACK))
+    g.append((cyl(2.6, 1.0, (0, 0, 18.2)).cut(cyl(2.0, 1.2, (0, 0, 18.1))), SILVER))
+    for x, y in ((2.38, 0), (-2.38, 0), (0, 2.38), (0, -2.38)):
+        g.append((cyl(0.5, 3.4, (x, y, -3.2)), SILVER))
+    return g
+
+
+def tip_jack_105():
+    """Johnson 105-075x horizontal tip jack: 10.5 x 4 x 5.2 mm nylon block with the 2 mm bore at the pin-1 end."""
+    g = []
+    body = box(-0.2, 10.3, -2.0, 2.0, 0.2, 5.2).cut(cyl(1.1, 6.0, (-0.3, 0, 2.7), (1, 0, 0)))
+    g.append((body, (0.75, 0.1, 0.1)))
+    for x in (0.0, 10.16):
+        g.append((cyl(0.45, 3.4, (x, 0, -3.2)), SILVER))
+    return g
+
+
+def mfr110():
+    """Bourns MF-R110: 8.9 x 14 mm disc 3 mm thick standing on 0.51 mm leads 5.1 mm apart."""
+    g = []
+    disc = box(-4.45, 4.45, -1.5, 1.5, 3.0, 14.0)
+    edges = [e for e in disc.Edges if abs(e.Length - 3.0) < 1e-6 and e.BoundBox.ZMin > 10]
+    try:
+        disc = disc.makeFillet(3.5, edges)
+    except Exception:
+        pass
+    g.append((disc, (0.85, 0.75, 0.2)))
+    for x in (-2.55, 2.55):
+        g.append((cyl(0.26, 6.2, (x, 0, -3.0)), SILVER))
+    return g
+
+
+def bead_4211r():
+    """Delevan 4211R-29 axial bead: 3.5 mm dia x 13.84 mm body laid flat on 20.32 mm leads."""
+    g = []
+    r = 1.75
+    g.append((cyl(r, 13.84, (10.16 - 6.92, 0, r), (1, 0, 0)), DARK))
+    g.append((cyl(0.4, 20.32, (0, 0, r), (1, 0, 0)), SILVER))
+    for x in (0.0, 20.32):
+        g.append((cyl(0.4, r + 3.0, (x, 0, -3.0)), SILVER))
+    return g
+
+
+def tb001_4():
+    """Same Sky TB001-500-04: 20 x 9 x 12.5 mm blue block, four screw heads on top, wire entries toward fp +Y (3D -Y)."""
+    g = []
+    body = box(-2.5, 17.5, -4.0, 5.0, 0.2, 12.5)
+    for i in range(4):
+        x = 5.0 * i
+        body = body.cut(cyl(1.7, 3.0, (x, 1.0, 10.0)))                                          # screw wells
+        body = body.cut(box(x - 1.6, x + 1.6, -4.2, -0.5, 2.5, 6.5))                            # wire entries
+    g.append((body, (0.15, 0.35, 0.75)))
+    for i in range(4):
+        g.append((cyl(1.5, 1.0, (5.0 * i, 1.0, 10.0)).cut(box(5.0 * i - 1.6, 5.0 * i + 1.6, 0.8, 1.2, 10.6, 11.1)), SILVER))
+        g.append((cyl(0.5, 3.7, (5.0 * i, 0, -3.5)), SILVER))
+    return g
+
+
 def standoff_m3_6mm():
     """Brass hex standoff, 5.5 mm across flats, 6 mm high, with an M3 screw head on top (preview hardware)."""
     pts = [Vector(3.18 * math.cos(math.radians(60 * k + 30)), 3.18 * math.sin(math.radians(60 * k + 30)), 0) for k in range(6)]
@@ -732,7 +795,9 @@ for name, builder, step in (('KY-040_Module', ky040, True), ('GC9A01_Round_1.28i
                             ('TRRS_Jack_Breakout', trrs_breakout, True), ('WS2812_LED_Module', ws2812_module, True),
                             ('MicroSD_Card_Module', microsd_module, True), ('USB-C_Breakout', usbc_breakout, True), ('SW_Push_6mm_2pin', push_6mm_2pin, True),
                             ('RP2350B-Plus-W', rp2350b_plus_w, True),
-                            ('Standoff_M3_H6mm', standoff_m3_6mm, True), ('USB_A_UJ2-AH-4-TH', usb_a_uj2, True), ('FerriteBead_2743001112', ferrite_bead_axial, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
+                            ('Standoff_M3_H6mm', standoff_m3_6mm, True), ('USB_A_UJ2-AH-4-TH', usb_a_uj2, True), ('FerriteBead_2743001112', ferrite_bead_axial, True),
+                            ('Banana_CalTest_CT3151V1', banana_ct3151v1, True), ('TipJack_Johnson_105-075x', tip_jack_105, True), ('Fuse_Bourns_MF-R110', mfr110, True),
+                            ('FerriteBead_Delevan_4211R', bead_4211r, True), ('TerminalBlock_TB001-500-04', tb001_4, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
     if os.environ.get('BUILD_ONLY') and name not in os.environ['BUILD_ONLY'].split(','):
         continue
     g = builder()

@@ -19,6 +19,11 @@ dimension and what is still unverified. Regenerate the library with `python3 too
 | Same Sky SDS-50J DIN-5 receptacle | stock `Connector:DIN-5_180degree` | `DIN-5_180deg_SameSky_SDS-50J` + VRML/STEP | exact (SDS-J datasheet) |
 | CUI UJ2-AH-4-TH USB-A receptacle | stock `Connector:USB_A` | `USB_A_CUI_UJ2-AH-4-TH_Horizontal` + VRML/STEP | pattern exact (vendor data), shell height nominal |
 | Fair-Rite 2743001112 bead on lead | stock `Device:FerriteBead` | `FerriteBead_Axial_L4.45mm_D3.5mm_P7.62mm` + VRML/STEP | exact (data sheet) |
+| Cal Test CT3151V1 banana jack | stock `Connector:Conn_01x01` | `Banana_CalTest_CT3151V1_Vertical` + VRML/STEP | exact (Cal Test drawing) |
+| Johnson 105-075x tip jack | stock `Connector:TestPoint` | `TipJack_Johnson_105-075x_Horizontal_P10.16mm` + VRML/STEP | pins from the 2020 board, unverified |
+| Bourns MF-R110 PPTC | stock `Device:Polyfuse` | `Fuse_Bourns_MF-R110` + VRML/STEP | exact (datasheet) |
+| Delevan 4211R-29 bead | stock `Device:FerriteBead` | `FerriteBead_Axial_L13.84mm_D3.5mm_P20.32mm` + VRML/STEP | body from listing |
+| Same Sky TB001-500-04 terminal block | stock `Connector:Screw_Terminal_01x04` | `TerminalBlock_SameSky_TB001-500-04_1x04_P5.00mm` + VRML/STEP | exact (datasheet) |
 | APS6404L 8 MB PSRAM | stock `Memory_RAM:APS6404L-SQRx-SN` | stock `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | datasheet |
 | RP2040-Zero form factor | `RP2040-Zero` | `RP2040-Zero` | edge pins exact (Waveshare drawing), back pads approximate |
 | ESP32-S3-DevKitC-1 | `ESP32-S3-DevKitC-1` | `ESP32-S3-DevKitC-1` | exact (Espressif library, CC-BY-SA 4.0) |
@@ -211,6 +216,23 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
   the Vishay K-series 0.1 uF, Würth 2.54 mm headers and the Samtec SSW-122 socket strip. Datasheets, the order
   spreadsheet and the vendor library downloads (SamacSys terms: usable in designs, not redistributable) are in the
   private repo.
+
+## TBD100x100t Eurorack test-bench power distribution board (2020 DipTrace design)
+
+- The board (github tbdtechpro/TBD100x100t-Eurorack-Test-Bench-Power-Distribution) places its banana jacks and tip
+  jacks as loose pads, so those footprints are new here; its BOM maps as follows.
+- `Banana_CalTest_CT3151V1_Vertical`: Cal Test drawing CT3151 rev K sheet 3, four 1.6 mm pins on a diamond 2.38 mm
+  from the centre (the board's pattern matches), 11.5 mm body, 13.4 mm flange, 19 mm tall. All four pads are pin 1.
+- `TipJack_Johnson_105-075x_Horizontal_P10.16mm`: Cinch publishes the 105-075x PCB drawing only on request; the
+  2020 board used two 1.5 mm holes 10.16 mm apart per jack and the listings give a 10.46 x 3.96 x 5.16 mm body, so the
+  footprint follows those. The 105-1050 press-in drawing is in the private repo for reference. Verify before use.
+- `Fuse_Bourns_MF-R110`: MF-R datasheet style 1, 8.9 x 14 mm disc 3 mm thick, 0.51 mm leads on 5.1 mm.
+- `FerriteBead_Axial_L13.84mm_D3.5mm_P20.32mm`: Delevan 4211R-29, 3.51 x 13.84 mm from the distributor listing; the
+  board used a 27.84 mm lead spacing.
+- `TerminalBlock_SameSky_TB001-500-04_1x04_P5.00mm`: TB001-500 datasheet, 1.3 mm holes on 5.0 mm, 20 x 9 x 12.5 mm
+  body with the pins 5 mm from the back. The -04BE (blue) is still listed as active at Mouser and Digi-Key.
+- Stock KiCad covers the 3M N2516-6002RB 2x8 box header and the Panasonic FC electrolytics (the board drew both
+  capacitors on a 5.08 mm generic pattern; the actual parts are 8 x 11.5 mm on 3.5 mm and 5 x 11 mm on 2 mm).
 
 ## ElectroCookie full-size breadboard PCB
 
