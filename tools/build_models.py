@@ -765,6 +765,16 @@ def tb001_4():
     return g
 
 
+def rlb0914():
+    """Bourns RLB0914 radial inductor: 8.7 mm dia x 12 mm shrink-sleeved drum centred between the 5.0 mm leads."""
+    g = []
+    g.append((cyl(4.35, 11.0, (2.5, 0, 1.0)).cut(cyl(3.2, 1.0, (2.5, 0, 11.6))), (0.1, 0.12, 0.35)))      # sleeve, top recess
+    g.append((cyl(3.2, 0.5, (2.5, 0, 11.3)), (0.35, 0.3, 0.2)))                                             # ferrite core
+    for x in (0.0, 5.0):
+        g.append((cyl(0.33, 4.0, (x, 0, -3.0)), SILVER))
+    return g
+
+
 def standoff_m3_6mm():
     """Brass hex standoff, 5.5 mm across flats, 6 mm high, with an M3 screw head on top (preview hardware)."""
     pts = [Vector(3.18 * math.cos(math.radians(60 * k + 30)), 3.18 * math.sin(math.radians(60 * k + 30)), 0) for k in range(6)]
@@ -797,7 +807,7 @@ for name, builder, step in (('KY-040_Module', ky040, True), ('GC9A01_Round_1.28i
                             ('RP2350B-Plus-W', rp2350b_plus_w, True),
                             ('Standoff_M3_H6mm', standoff_m3_6mm, True), ('USB_A_UJ2-AH-4-TH', usb_a_uj2, True), ('FerriteBead_2743001112', ferrite_bead_axial, True),
                             ('Banana_CalTest_CT3151V1', banana_ct3151v1, True), ('TipJack_Johnson_105-075x', tip_jack_105, True), ('Fuse_Bourns_MF-R110', mfr110, True),
-                            ('FerriteBead_Delevan_4211R', bead_4211r, True), ('TerminalBlock_TB001-500-04', tb001_4, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
+                            ('FerriteBead_Delevan_4211R', bead_4211r, True), ('TerminalBlock_TB001-500-04', tb001_4, True), ('L_Radial_Bourns_RLB0914', rlb0914, True), ('SW_Slide_SPDT_P2.5mm', slide_switch_p2, True)):
     if os.environ.get('BUILD_ONLY') and name not in os.environ['BUILD_ONLY'].split(','):
         continue
     g = builder()

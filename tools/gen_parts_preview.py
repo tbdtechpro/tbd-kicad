@@ -96,7 +96,8 @@ usb = add(LIB, 'USB_A_CUI_UJ2-AH-4-TH_Horizontal', 'J6', 180); centre_at(usb, 18
 fb = add(LIB, 'FerriteBead_Axial_L4.45mm_D3.5mm_P7.62mm', 'FB1'); centre_at(fb, 268, 146)
 for name, ref, x, y, rot in (('Banana_CalTest_CT3151V1_Vertical', 'J7', 196, 139, 0), ('TerminalBlock_SameSky_TB001-500-04_1x04_P5.00mm', 'J8', 216, 138, 0),
                              ('Fuse_Bourns_MF-R110', 'F1', 236, 138, 0), ('FerriteBead_Axial_L13.84mm_D3.5mm_P20.32mm', 'FB2', 222, 147, 0),
-                             ('TipJack_Johnson_105-075x_Horizontal_P10.16mm', 'J9', 242, 147, 0)):
+                             ('TipJack_Johnson_105-075x_Horizontal_P10.16mm', 'J9', 242, 147, 0),
+                             ('L_Radial_D8.7mm_H12.0mm_P5.00mm_Bourns_RLB0914', 'L1', 206, 148, 90)):
     centre_at(add(LIB, name, ref, rot), x, y)
 uno = add(LIB, 'MIDI_Shield_K194725ASJH', 'A2'); centre_at(uno, 158, 100)
 logo = add(LIB, 'Logo_TBD_Full_40mm', 'G1'); centre_at(logo, 222, 18)

@@ -1209,6 +1209,16 @@ write_fp('TerminalBlock_SameSky_TB001-500-04_1x04_P5.00mm', footprint(
     'toward +Y. TB001-500 datasheet 09/12/2024; -04BE is the blue one.',
     'terminal block screw 5mm cui same sky tb001', 'through_hole', items, -6.5, 5.5))
 
+# --- Bourns RLB0914 radial inductor (RLB datasheet): 8.7 mm dia x 12 mm body, 0.65 mm leads on 5.0 mm ---------------
+items = [pad_tht(1, 0, 0, 2.2, 1.1, 'rect'), pad_tht(2, 5.0, 0, 2.2, 1.1),
+         fp_circle(2.5, 0, 4.35, 'F.Fab', 0.1), fp_circle(2.5, 0, 4.5, 'F.SilkS', 0.12), fp_circle(2.5, 0, 4.7, 'F.CrtYd', 0.05),
+         fp_text('${REFERENCE}', 2.5, -5.8, 'F.Fab', 0.8, 0.12), model(MODEL + 'L_Radial_Bourns_RLB0914.wrl')]
+write_fp('L_Radial_D8.7mm_H12.0mm_P5.00mm_Bourns_RLB0914', footprint(
+    'L_Radial_D8.7mm_H12.0mm_P5.00mm_Bourns_RLB0914',
+    'Bourns RLB0914 series radial power inductor (e.g. RLB0914-100KL, 10 uH, 2.7 A, 48 mOhm): 8.7 +/-0.5 mm dia, '
+    '12 +/-1 mm tall, 0.65 mm leads on 5.0 mm. RLB series datasheet. Same pad pattern as the stock Fastron 07HCP '
+    'footprint, with the 12 mm body for the model.', 'inductor radial bourns rlb0914 power', 'through_hole', items, -6, 6))
+
 # --- M3 hex standoff, 6 mm (mechanical, used to stand boards off in the parts preview) ----------------------------
 items = [pad_npth(0, 0, 3.2), fp_circle(0, 0, 3.0, 'F.Fab', 0.1), fp_circle(0, 0, 3.3, 'F.CrtYd', 0.05),
          fp_text('${REFERENCE}', 0, -4.5, 'F.Fab', 0.6, 0.1), model(MODEL + 'Standoff_M3_H6mm.wrl')]

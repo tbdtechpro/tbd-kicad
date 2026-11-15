@@ -47,6 +47,7 @@ it under CC-BY-SA 4.0 with the KiCad library exception: designs made with it are
 | Bourns MF-R110 radial PPTC | stock `Device:Polyfuse` | `Fuse_Bourns_MF-R110` | VRML + STEP | Bourns datasheet (exact) |
 | API Delevan 4211R-29 axial ferrite bead | stock `Device:FerriteBead` | `FerriteBead_Axial_L13.84mm_D3.5mm_P20.32mm` | VRML + STEP | listing dimensions |
 | Same Sky (CUI) TB001-500-04 screw terminal block, 5 mm | stock `Connector:Screw_Terminal_01x04` | `TerminalBlock_SameSky_TB001-500-04_1x04_P5.00mm` | VRML + STEP | TB001-500 datasheet (exact) |
+| Bourns RLB0914 radial power inductor (e.g. RLB0914-100KL 10 µH) | stock `Device:L` | `L_Radial_D8.7mm_H12.0mm_P5.00mm_Bourns_RLB0914` | VRML + STEP | Bourns RLB datasheet (exact) |
 | SPDT slide switch, 2.5 mm pitch with lugs (as on the MIDI shield) | stock `Switch:SW_SPDT` | `SW_Slide_SPDT_P2.5mm_Lugs` | VRML + STEP | pitch and lugs from photos |
 | Miniature 6 x 6 mm tactile pushbutton, 2 leads on 5.08 mm (ProtoSupplies 10-pack) | stock `Switch:SW_Push` | `SW_Push_6x6mm_2pin_P5.08mm` | VRML + STEP | listing dimensions |
 | **Optocouplers** | | | | |

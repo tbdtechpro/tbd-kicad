@@ -24,6 +24,7 @@ dimension and what is still unverified. Regenerate the library with `python3 too
 | Bourns MF-R110 PPTC | stock `Device:Polyfuse` | `Fuse_Bourns_MF-R110` + VRML/STEP | exact (datasheet) |
 | Delevan 4211R-29 bead | stock `Device:FerriteBead` | `FerriteBead_Axial_L13.84mm_D3.5mm_P20.32mm` + VRML/STEP | body from listing |
 | Same Sky TB001-500-04 terminal block | stock `Connector:Screw_Terminal_01x04` | `TerminalBlock_SameSky_TB001-500-04_1x04_P5.00mm` + VRML/STEP | exact (datasheet) |
+| Bourns RLB0914 radial inductor | stock `Device:L` | `L_Radial_D8.7mm_H12.0mm_P5.00mm_Bourns_RLB0914` + VRML/STEP | exact (RLB datasheet) |
 | APS6404L 8 MB PSRAM | stock `Memory_RAM:APS6404L-SQRx-SN` | stock `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm` | datasheet |
 | RP2040-Zero form factor | `RP2040-Zero` | `RP2040-Zero` | edge pins exact (Waveshare drawing), back pads approximate |
 | ESP32-S3-DevKitC-1 | `ESP32-S3-DevKitC-1` | `ESP32-S3-DevKitC-1` | exact (Espressif library, CC-BY-SA 4.0) |
@@ -231,6 +232,13 @@ Redistributable vendored sources live in `lib/vendor/` (Teensy: MIT; Espressif: 
   board used a 27.84 mm lead spacing.
 - `TerminalBlock_SameSky_TB001-500-04_1x04_P5.00mm`: TB001-500 datasheet, 1.3 mm holes on 5.0 mm, 20 x 9 x 12.5 mm
   body with the pins 5 mm from the back. The -04BE (blue) is still listed as active at Mouser and Digi-Key.
+- Rev 0.2 of that board (2026-11) adds a Bourns RLB0914-100KL filter inductor: `L_Radial_D8.7mm_H12.0mm_P5.00mm_Bourns_RLB0914`
+  (8.7 mm dia, 12 mm tall, 0.65 mm leads on 5.0 mm; 10 uH, Q 50, SRF 20 MHz, 48 mOhm max, 2.7 A). Its other new parts are
+  covered by stock KiCad: Panasonic EEU-FR1E102 (10 x 20 mm, 5.0 mm) on `CP_Radial_D10.0mm_P5.00mm`, EEU-FR1H470 (6.3 x 11.2,
+  2.5 mm) on `CP_Radial_D6.3mm_P2.50mm`, TDK FG26X7R1E106KRT06 (5.5 x 6.0 x 3.5 mm, 5.0 mm) on `C_Disc_D6.0mm_W4.4mm_P5.00mm`,
+  TDK FG28X7R1H104KNT06 (4.0 x 5.5 x 2.5 mm, 5.0 mm) on `C_Disc_D5.0mm_W2.5mm_P5.00mm`, 1N5822 on `D_DO-201AD_P12.70mm_Horizontal`,
+  Keystone 5010/5011 on `TestPoint_Keystone_5010-5014_Multipurpose` (no stock 3D model), 3M N2516-6002RB on
+  `IDC-Header_2x08_P2.54mm_Vertical` (3M drawing TS-0770: 27.64 mm shroud, centre polarizing slot on the odd-pin wall).
 - Stock KiCad covers the 3M N2516-6002RB 2x8 box header and the Panasonic FC electrolytics (the board drew both
   capacitors on a 5.08 mm generic pattern; the actual parts are 8 x 11.5 mm on 3.5 mm and 5 x 11 mm on 2 mm).
 
